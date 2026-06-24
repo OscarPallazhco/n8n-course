@@ -1,4 +1,5 @@
 # Pokémon Scraper Workflow
+
 The workflow created here does the following:
 
 - Retrieves the rows from a previously specified sheet
@@ -8,6 +9,21 @@ The workflow created here does the following:
 - It updates the rows in the original sheet, matching the IDs
 - It uses the Aggregate node to convert the multiple results into a list
 - Using the Send Email node and receiving the list of results, it delivers a report.
+
+## Topics
+
+- Nodos
+- Trigger Nodes
+- Filtros
+- Agrupaciones
+- Nodo de:
+    - Gmail
+    - GoogleSheet
+    - HTTP Requests
+    - Edit
+    - Aggregate
+- Buenas prácticas para nombrar nodos
+
 
 ## Screenshots
 
