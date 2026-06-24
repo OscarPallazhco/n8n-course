@@ -1,0 +1,405 @@
+{
+  "name": "Pokemon Scraper",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -416,
+        0
+      ],
+      "id": "d51d7ce8-1083-4644-90e6-ff6467821c79",
+      "name": "Click"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1_p6AgbQFYSvNgqxc2jpW_LCtTXZcqn3T-ThNnMAfj9g",
+          "mode": "list",
+          "cachedResultName": "n8n - pokemons",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_p6AgbQFYSvNgqxc2jpW_LCtTXZcqn3T-ThNnMAfj9g/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_p6AgbQFYSvNgqxc2jpW_LCtTXZcqn3T-ThNnMAfj9g/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -208,
+        0
+      ],
+      "id": "4fa8e8be-6884-45b6-802f-3e3d6262c0a9",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5NPaHPnEb6XpvIqS",
+          "name": "Google Sheets - oepallaz@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://pokeapi.co/api/v2/pokemon/{{ $json.Id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "e6c699f4-cd04-402e-b4fb-48ad0992616e",
+      "name": "Get pokemon info"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "786a27e1-9277-44fd-bade-0205ab8e498b",
+              "name": "id",
+              "value": "={{ $json.id }}",
+              "type": "number"
+            },
+            {
+              "id": "c0eecc39-dfdf-4b71-9515-4e0d1ba7b0df",
+              "name": "name",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "f19d0836-9743-4c67-9a5f-541ccb9dd75d",
+              "name": "type",
+              "value": "={{ $json.types[0].type.name }}",
+              "type": "string"
+            },
+            {
+              "id": "01bdc8da-c166-4dd5-9732-47cef9af9c3f",
+              "name": "sprite_back",
+              "value": "={{ $json.sprites.back_default }}",
+              "type": "string"
+            },
+            {
+              "id": "563ebd1a-bcdf-49c9-a2d1-f8f197bda285",
+              "name": "sprite_front",
+              "value": "={{ $json.sprites.front_default }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        416,
+        0
+      ],
+      "id": "cfc08981-1f6e-48ba-9596-b96c10c2c6b0",
+      "name": "Clean pokemon data"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "987d7564-083c-4c4f-b358-56ea13f47058",
+              "leftValue": "={{ $json.Name }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "6a99765a-20f1-4fcf-9d07-b33441bf68ee",
+              "leftValue": "={{ $json.Type }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "e843f001-61ea-4e29-8007-a39c6ab79296",
+      "name": "Filter pokemons without data"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1_p6AgbQFYSvNgqxc2jpW_LCtTXZcqn3T-ThNnMAfj9g",
+          "mode": "list",
+          "cachedResultName": "n8n - pokemons",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_p6AgbQFYSvNgqxc2jpW_LCtTXZcqn3T-ThNnMAfj9g/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_p6AgbQFYSvNgqxc2jpW_LCtTXZcqn3T-ThNnMAfj9g/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $json.name }}",
+            "Type": "={{ $json.type }}",
+            "Sprite back": "={{ $json.sprite_back }}",
+            "Sprite front": "={{ $json.sprite_front }}",
+            "Id": "={{ $json.id }}"
+          },
+          "matchingColumns": [
+            "Id"
+          ],
+          "schema": [
+            {
+              "id": "Id",
+              "displayName": "Id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Type",
+              "displayName": "Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Sprite front",
+              "displayName": "Sprite front",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Sprite back",
+              "displayName": "Sprite back",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        624,
+        0
+      ],
+      "id": "289a5e5c-030e-4870-a084-7ff434e185b1",
+      "name": "Update missing pokemon info",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5NPaHPnEb6XpvIqS",
+          "name": "Google Sheets - oepallaz@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "oepallaz@gmail.com",
+        "subject": "n8n course test - results",
+        "message": "=<h1>New pokemons</h1>\n\n{{ $json.Name }}\n<br/>",
+        "options": {
+          "senderName": "n8n course -pokemons app"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1024,
+        0
+      ],
+      "id": "91178b84-fb69-47ed-90d5-9ef69d6e37f5",
+      "name": "Send results",
+      "webhookId": "98e76128-ce8a-4333-aff2-f6255ef40e12",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "5pBeJd9Z7WxPKyEs",
+          "name": "Gmail - oepallaz@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "Id"
+            },
+            {
+              "fieldToAggregate": "Name"
+            }
+          ]
+        },
+        "options": {
+          "mergeLists": false
+        }
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        832,
+        0
+      ],
+      "id": "46980586-bebe-428d-ac41-b3a21fef23c3",
+      "name": "Group results"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Click": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Filter pokemons without data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get pokemon info": {
+      "main": [
+        [
+          {
+            "node": "Clean pokemon data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean pokemon data": {
+      "main": [
+        [
+          {
+            "node": "Update missing pokemon info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter pokemons without data": {
+      "main": [
+        [
+          {
+            "node": "Get pokemon info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update missing pokemon info": {
+      "main": [
+        [
+          {
+            "node": "Group results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Group results": {
+      "main": [
+        [
+          {
+            "node": "Send results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "352fbda2-3b6d-4222-ab13-c7f1c438b9d6",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "91132d1ddf193cca6be26753e109a20d0151cd79f07911fa86d4408139f34e6d"
+  },
+  "id": "gGNhh8ktjGLhqk8F",
+  "tags": []
+}
