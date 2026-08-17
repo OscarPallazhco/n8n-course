@@ -1,0 +1,806 @@
+{
+  "name": "Forms - T-Shirts Postgres",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Google Sheet\nGet requests from Google sheets and filter them",
+        "height": 432,
+        "width": 800
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -64,
+        64
+      ],
+      "typeVersion": 1,
+      "id": "b48ca13d-d6ec-4a44-a8a0-37dbfad745e1",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM tshirts_inventory WHERE SIZE = '{{ $json['Talla de camiseta'] }}';\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1120,
+        480
+      ],
+      "id": "e137eeee-9e32-4fc6-a757-f68a683e4ce5",
+      "name": "Get product info",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "bloYerYqShUoXn5a",
+          "name": "Supabase - TShirts n8n Project"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        912,
+        208
+      ],
+      "id": "51da6779-6ac7-4657-9dcc-648a3586c324",
+      "name": "Iterate requests"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "871c07b5-158a-4a1d-8261-94668131d451",
+              "leftValue": "={{ $json.processed_date }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        480,
+        208
+      ],
+      "id": "83344ff1-22b7-4939-bc46-422c47eeaca9",
+      "name": "Filter requests already processed"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "6db5cae3-9884-48ec-a524-7b51784ed042",
+              "leftValue": "={{ $json['Dirección de correo electrónico'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        256,
+        208
+      ],
+      "id": "e25e4883-a672-4eb8-889d-7ead9a204663",
+      "name": "Filter requests without email"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1g5uwK1LPN5XJN7NJcsPaYTr3rLBgFrsBwJnD2j3r9fc",
+          "mode": "list",
+          "cachedResultName": "T-shirts_form_answers",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1g5uwK1LPN5XJN7NJcsPaYTr3rLBgFrsBwJnD2j3r9fc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 177136175,
+          "mode": "list",
+          "cachedResultName": "Respuestas de formulario 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1g5uwK1LPN5XJN7NJcsPaYTr3rLBgFrsBwJnD2j3r9fc/edit#gid=177136175"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        32,
+        208
+      ],
+      "id": "d3d36939-ded9-4ef9-ac19-6977c74721a2",
+      "name": "Get tshirts requests",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5NPaHPnEb6XpvIqS",
+          "name": "Google Sheets - oepallaz@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -192,
+        208
+      ],
+      "id": "50386e8f-602c-4d92-a9a3-19973c9a66e5",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "c3c402bc-5549-44ed-98b2-854af0d59e4d",
+              "leftValue": "={{ $json.quantity_in_stock }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "0d7a2eb4-d43e-43ff-9178-d5119f0b3515",
+              "leftValue": "={{ Number($json.quantity_in_stock)}}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1360,
+        480
+      ],
+      "id": "82eb6cf0-73d5-4ef9-a416-10ea9bc3222d",
+      "name": "has stock?"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "schema": {
+          "__rl": true,
+          "value": "public",
+          "mode": "list",
+          "cachedResultName": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tshirts_inventory",
+          "mode": "list",
+          "cachedResultName": "tshirts_inventory"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $json.id }}",
+            "quantity_in_stock": "={{ Number($json.quantity_in_stock) - 1 }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "description",
+              "displayName": "description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "quantity_in_stock",
+              "displayName": "quantity_in_stock",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "size",
+              "displayName": "size",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1568,
+        368
+      ],
+      "id": "ede965a1-e664-4a3b-b22e-5e369d8b9513",
+      "name": "Update stock",
+      "credentials": {
+        "postgres": {
+          "id": "bloYerYqShUoXn5a",
+          "name": "Supabase - TShirts n8n Project"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "name": "End item",
+      "typeVersion": 1,
+      "position": [
+        2064,
+        496
+      ],
+      "id": "d45b54d5-d193-4026-842d-037fd17b72af"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM tshirts_inventory",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1504,
+        -208
+      ],
+      "id": "26a94f19-d974-4d9d-a9a0-ff358e8b151e",
+      "name": "Get final inventory",
+      "credentials": {
+        "postgres": {
+          "id": "bloYerYqShUoXn5a",
+          "name": "Supabase - TShirts n8n Project"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1104,
+        -112
+      ],
+      "id": "1352c6d9-1903-4d02-ba4a-cd431b63d9d7",
+      "name": "group results"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1808,
+        -96
+      ],
+      "id": "fc78d663-3ee1-4999-8444-c4b4f1530d3d",
+      "name": "await for both processes"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        2016,
+        -96
+      ],
+      "id": "8625dca4-57a5-4ff6-bf4b-d693d3415b81",
+      "name": "group results before send email"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1g5uwK1LPN5XJN7NJcsPaYTr3rLBgFrsBwJnD2j3r9fc",
+          "mode": "list",
+          "cachedResultName": "T-shirts_form_answers",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1g5uwK1LPN5XJN7NJcsPaYTr3rLBgFrsBwJnD2j3r9fc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 177136175,
+          "mode": "list",
+          "cachedResultName": "Respuestas de formulario 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1g5uwK1LPN5XJN7NJcsPaYTr3rLBgFrsBwJnD2j3r9fc/edit#gid=177136175"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1504,
+        0
+      ],
+      "id": "2f546fd3-ae8a-43bb-9680-c5ee063a8657",
+      "name": "Get final tshirts requests",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5NPaHPnEb6XpvIqS",
+          "name": "Google Sheets - oepallaz@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1g5uwK1LPN5XJN7NJcsPaYTr3rLBgFrsBwJnD2j3r9fc",
+          "mode": "list",
+          "cachedResultName": "T-shirts_form_answers",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1g5uwK1LPN5XJN7NJcsPaYTr3rLBgFrsBwJnD2j3r9fc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 177136175,
+          "mode": "list",
+          "cachedResultName": "Respuestas de formulario 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1g5uwK1LPN5XJN7NJcsPaYTr3rLBgFrsBwJnD2j3r9fc/edit#gid=177136175"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Dirección de correo electrónico": "={{ $('Iterate requests').item.json['Dirección de correo electrónico'] }}",
+            "is_assigned": "={{ Number($('Get product info').item.json.quantity_in_stock) > 0 }}",
+            "processed_date": "={{ $now }}"
+          },
+          "matchingColumns": [
+            "Dirección de correo electrónico"
+          ],
+          "schema": [
+            {
+              "id": "Marca temporal",
+              "displayName": "Marca temporal",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Nombre",
+              "displayName": "Nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Talla de camiseta",
+              "displayName": "Talla de camiseta",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Otros comentarios",
+              "displayName": "Otros comentarios",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Dirección de correo electrónico",
+              "displayName": "Dirección de correo electrónico",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "is_assigned",
+              "displayName": "is_assigned",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "processed_date",
+              "displayName": "processed_date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1792,
+        496
+      ],
+      "id": "9ade907a-01c3-4a8e-b07a-adfe38afbac8",
+      "name": "Update tshirt request",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5NPaHPnEb6XpvIqS",
+          "name": "Google Sheets - oepallaz@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "oepallaz@gmail.com",
+        "subject": "n8n course - TShirts process completed",
+        "message": "=<!DOCTYPE html>\n<html>\n<head>\n<meta charset=\"UTF-8\">\n<style>\n    body {\n        font-family: Arial, sans-serif;\n        color: #333;\n        line-height: 1.5;\n    }\n    .container {\n        max-width: 700px;\n        margin: auto;\n        padding: 20px;\n    }\n    h2 {\n        color: #2c3e50;\n    }\n    table {\n        width: 100%;\n        border-collapse: collapse;\n        margin-top: 15px;\n        margin-bottom: 25px;\n    }\n    th, td {\n        border: 1px solid #ddd;\n        padding: 8px 10px;\n        text-align: left;\n    }\n    th {\n        background: #f5f5f5;\n    }\n    .success {\n        color: #1e7e34;\n        font-weight: bold;\n    }\n    .footer {\n        margin-top: 30px;\n        font-size: 12px;\n        color: #777;\n    }\n</style>\n</head>\n\n<body>\n<div class=\"container\">\n\n<h2>✅ T-Shirt Request Process Completed</h2>\n\n<p class=\"success\">\nThe T-shirt request process has finished successfully. The inventory has been updated.\n</p>\n\n<p>\n<b>Total Requests Processed:</b> {{ $('Iterate requests').all().length }}\n\n</p>\n\n<h3>Updated Inventory</h3>\n\n<table>\n<tr>\n    <th>Size</th>\n    <th>Remaining Quantity</th>\n</tr>\n\n{{ $('Get final inventory').all().map(item => `\n<tr>\n    <td>${item.json.size}</td>\n    <td>${item.json.quantity_in_stock}</td>\n</tr>\n`).join('') }}\n\n\n</table>\n\n\n\n<h3>Processed Requests</h3>\n\n<table>\n<tr>\n    <th>Name</th>\n    <th>Size</th>\n    <th>Email</th>\n    <th>Status</th>\n</tr>\n\n{{ $('Get final tshirts requests').all().map(order => `\n<tr>\n    <td>${order.json.Nombre}</td>\n    <td>${order.json[\"Talla de camiseta\"]}</td>\n    <td>${order.json[\"Dirección de correo electrónico\"]}</td>\n    <td>${order.json.is_assigned ? \"Assigned\" : \"Not Assigned\"}</td>\n</tr>\n`).join('') }}\n\n</table>\n\n\n\n</div>\n</body>\n</html>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2272,
+        -96
+      ],
+      "id": "3fed9933-d97d-4732-9fda-cbe749d07008",
+      "name": "Send report 2",
+      "webhookId": "cc717c72-3adc-4556-bb8a-414c424a915d",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "5pBeJd9Z7WxPKyEs",
+          "name": "Gmail - oepallaz@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Process the requests \nget tshirt request\ncheck stock\nupdate: stock / request info",
+        "height": 480,
+        "width": 1184
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1088,
+        256
+      ],
+      "id": "12923e60-07a0-4f46-ac1f-560d9c06e395",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## Get updated info\nInfo used for generate the report",
+        "height": 576
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1440,
+        -336
+      ],
+      "id": "0a43b441-82a2-4183-9793-3a86841d0991",
+      "name": "Sticky Note4"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Get product info": {
+      "main": [
+        [
+          {
+            "node": "has stock?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Iterate requests": {
+      "main": [
+        [
+          {
+            "node": "group results",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get product info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter requests already processed": {
+      "main": [
+        [
+          {
+            "node": "Iterate requests",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter requests without email": {
+      "main": [
+        [
+          {
+            "node": "Filter requests already processed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get tshirts requests": {
+      "main": [
+        [
+          {
+            "node": "Filter requests without email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get tshirts requests",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "has stock?": {
+      "main": [
+        [
+          {
+            "node": "Update stock",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update tshirt request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update stock": {
+      "main": [
+        [
+          {
+            "node": "Update tshirt request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "End item": {
+      "main": [
+        [
+          {
+            "node": "Iterate requests",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get final inventory": {
+      "main": [
+        [
+          {
+            "node": "await for both processes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "group results": {
+      "main": [
+        [
+          {
+            "node": "Get final inventory",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get final tshirts requests",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "await for both processes": {
+      "main": [
+        [
+          {
+            "node": "group results before send email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "group results before send email": {
+      "main": [
+        [
+          {
+            "node": "Send report 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get final tshirts requests": {
+      "main": [
+        [
+          {
+            "node": "await for both processes",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Update tshirt request": {
+      "main": [
+        [
+          {
+            "node": "End item",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send report 2": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "1022cf9b-bc77-4ae2-a841-a0fa8128e776",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "91132d1ddf193cca6be26753e109a20d0151cd79f07911fa86d4408139f34e6d"
+  },
+  "id": "6F4TwHuo9Lzagoaz",
+  "tags": []
+}
