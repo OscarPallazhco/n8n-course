@@ -1,0 +1,799 @@
+{
+  "name": "RRHH - Vacations",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "RRHH Vacations",
+        "formDescription": "Form to ask vacations",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Complete name",
+              "fieldName": "completeName",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldType": "email",
+              "fieldName": "email",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Start date",
+              "fieldType": "date",
+              "fieldName": "startDate",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "End date",
+              "fieldType": "date",
+              "fieldName": "endDate",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Comments",
+              "fieldType": "textarea",
+              "fieldName": "comments"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        0,
+        0
+      ],
+      "id": "34d05819-dfa5-4667-860c-c6c82b845332",
+      "name": "On form submission",
+      "webhookId": "2f80aa85-3f2b-46e9-ad3b-c2fef9922416"
+    },
+    {
+      "parameters": {
+        "content": "## Validations\n",
+        "height": 288,
+        "width": 1680,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        368,
+        -96
+      ],
+      "id": "9c14b487-48f4-4fea-88ce-67e53181f4ca",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "8b8577e4-1d73-4979-87e8-8bb285534772",
+              "leftValue": "={{ $json.startDate.toDateTime() }}",
+              "rightValue": "={{ $now.plus(7, 'days') }}",
+              "operator": {
+                "type": "dateTime",
+                "operation": "afterOrEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        448,
+        0
+      ],
+      "id": "ac4051c7-68d2-4432-abe2-5688900325be",
+      "name": "startDate is at least in 7 days?"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "f31af86e-958d-413d-91f0-eee371a3c3fb",
+              "leftValue": "={{ $('calculate daysRequested').item.json.daysRequested }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        672,
+        0
+      ],
+      "id": "e0dbbb16-c494-40b3-95e1-5cae63ed37dc",
+      "name": "request has at least 1 day?"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "476fe6b6-ab0a-43af-936d-9770391f5685",
+              "leftValue": "={{ $json.vacation_days }}",
+              "rightValue": "={{ $('calculate daysRequested').item.json.daysRequested }}",
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1120,
+        0
+      ],
+      "id": "0eb2b971-40e8-4c54-afa9-9ac73768ee41",
+      "name": "Has available days"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"result\": false,\n  \"reason\": \"The number of requested days off exceeds the number of available days off. Available days: {{ $('Get employee info').item.json.vacation_days }}\"\n}\n ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1168,
+        320
+      ],
+      "id": "2dea2edf-4afe-4879-beb9-614bcf94e35c",
+      "name": "available days validation - error message"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n  \"result\": false,\n  \"reason\": \"Requests for time off must be submitted at least 7 days in advance.\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        480,
+        320
+      ],
+      "id": "51cc9334-ccb0-443b-945d-1e8419930b78",
+      "name": "7 days validation - error message"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n  \"result\": false,\n  \"reason\": \"Requests for time off must be for at least 1 day.\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        688,
+        320
+      ],
+      "id": "b646787e-756c-4dcb-b3b1-3c2df826c2ec",
+      "name": "1 day validation - error message"
+    },
+    {
+      "parameters": {
+        "authentication": "webhook",
+        "content": "=## 🕐 Time-Off Request\n\nA new time-off request requires your review.\n\n**Employee:** {{ $('On form submission').item.json.completeName }}\n**Start:** {{ $('On form submission').item.json.startDate }}\n**End:** {{ $('On form submission').item.json.endDate }}\n**Days:** {{ $('calculate daysRequested').item.json.daysRequested }}\n\n**Comments:**\n> {{ $('On form submission').item.json.comments }}\n\n### ⚡ Action Required\n\nPlease review the request and **[approve or deny]({{ $execution.resumeFormUrl }})** it.\n\n\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.discord",
+      "typeVersion": 2,
+      "position": [
+        1392,
+        -320
+      ],
+      "id": "7d6df3a7-227b-4469-880a-a78431f76fb5",
+      "name": "send discord message",
+      "webhookId": "0274e02d-8f66-4eb8-bfab-79d2d4c30d9d",
+      "credentials": {
+        "discordWebhookApi": {
+          "id": "eS1JBNSt0KWht6CD",
+          "name": "Dscrd Wbh - n8n test course server - notifications wbh"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resume": "form",
+        "formTitle": "Vacation request",
+        "formDescription": "=\n<p>\n    Approve or deny the Vacation request.\n</p>\n\n  <!-- Request Details -->\n  <div style=\"\n    margin: 24px 0;\n    padding: 20px;\n    background-color: #f8f9fa;\n    border: 1px solid #e5e7eb;\n    border-radius: 8px;\n  \">\n\n    <h2 style=\"\n      font-size: 17px;\n      color: #1f2937;\n      margin: 0 0 16px 0;\n    \">\n      Request Details\n    </h2>\n\n    <p style=\"margin: 8px 0;\">\n      <strong>Employee:</strong>\n      {{ $('On form submission').item.json.completeName }}\n    </p>\n\n    <p style=\"margin: 8px 0;\">\n      <strong>Start date:</strong>\n      {{ $('On form submission').item.json.startDate }}\n    </p>\n\n    <p style=\"margin: 8px 0;\">\n      <strong>End date:</strong>\n      {{ $('On form submission').item.json.endDate }}\n    </p>\n\n    <p style=\"margin: 8px 0;\">\n      <strong>Days requested:</strong>\n      {{ $('calculate daysRequested').item.json.daysRequested }}\n    </p>\n\n    <p style=\"margin: 8px 0;\">\n      <strong>Comments:</strong>\n      {{ $('On form submission').item.json.comments }}\n    </p>\n\n    <p style=\"margin: 8px 0;\">\n      <strong>Requested at:</strong>\n      {{ $('On form submission').item.json.submittedAt }}\n    </p>\n\n  </div>",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Approve or Deny?",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Approve"
+                  },
+                  {
+                    "option": "Deny"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Comments",
+              "fieldType": "textarea"
+            }
+          ]
+        },
+        "limitWaitTime": true,
+        "resumeAmount": 2,
+        "resumeUnit": "days",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1600,
+        -320
+      ],
+      "id": "e4399f2f-9ed6-4b7b-9cac-05dbaa0e65ca",
+      "name": "Wait manager revision",
+      "webhookId": "305ed2d3-2b44-4ddd-b222-5cd38a78cfc7"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "edf90087-ffc9-4dcd-a505-65464db4209e",
+              "leftValue": "={{ $json['Approve or Deny?'] }}",
+              "rightValue": "Approve",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1776,
+        -32
+      ],
+      "id": "ea52dff7-da15-4032-8592-ebba66f0b37d",
+      "name": "was approved?"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"result\": false,\n  \"reason\": \"{{ $('Wait manager revision').item.json.Comments }}\"\n}\n ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1808,
+        320
+      ],
+      "id": "bb32731f-697d-4098-894c-00e3bed978cb",
+      "name": "manager revision - deny message"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('On form submission').item.json.email }}",
+        "subject": "Response to the Request for Time Off",
+        "message": "=<div style=\"font-family: Arial, Helvetica, sans-serif; max-width: 650px; margin: 0 auto; color: #333; line-height: 1.6;\">\n\n  <h1 style=\"font-size: 24px; color: #1f2937; margin-bottom: 24px;\">\n    Response to the Request for Time Off\n  </h1>\n\n  <p>\n    Dear <strong>{{ $('On form submission').item.json.completeName }}</strong>,\n  </p>\n\n  <p>\n    Thank you for submitting your request for time off. After reviewing your\n    request, we regret to inform you that it has been <strong>denied</strong>.\n  </p>\n\n  <!-- Request Details -->\n  <div style=\"\n    margin: 24px 0;\n    padding: 20px;\n    background-color: #f8f9fa;\n    border: 1px solid #e5e7eb;\n    border-radius: 8px;\n  \">\n\n    <h2 style=\"\n      font-size: 17px;\n      color: #1f2937;\n      margin: 0 0 16px 0;\n    \">\n      Request Details\n    </h2>\n\n    <p style=\"margin: 8px 0;\">\n      <strong>Employee:</strong>\n      {{ $('On form submission').item.json.completeName }}\n    </p>\n\n    <p style=\"margin: 8px 0;\">\n      <strong>Start date:</strong>\n      {{ $('On form submission').item.json.startDate }}\n    </p>\n\n    <p style=\"margin: 8px 0;\">\n      <strong>End date:</strong>\n      {{ $('On form submission').item.json.endDate }}\n    </p>\n\n    <p style=\"margin: 8px 0;\">\n      <strong>Days requested:</strong>\n      {{ $('calculate daysRequested').item.json.daysRequested }}\n    </p>\n\n    <p style=\"margin: 8px 0;\">\n      <strong>Comments:</strong>\n      {{ $('On form submission').item.json.comments }}\n    </p>\n\n    <p style=\"margin: 8px 0;\">\n      <strong>Requested at:</strong>\n      {{ $('On form submission').item.json.submittedAt }}\n    </p>\n\n  </div>\n\n  <!-- Reason -->\n  <div style=\"\n    margin: 24px 0;\n    padding: 16px 20px;\n    background-color: #f8f9fa;\n    border-left: 4px solid #6b7280;\n    border-radius: 4px;\n  \">\n    <p style=\"margin: 0 0 6px 0;\">\n      <strong>Reason for denial</strong>\n    </p>\n\n    <p style=\"margin: 0;\">\n      {{ $json.reason || \"Unspecified\" }}\n    </p>\n  </div>\n\n  <p>\n    If you have any questions regarding this decision, please contact HR.\n  </p>\n\n  <p style=\"margin-top: 32px;\">\n    Best regards,<br>\n    <strong>HHRR</strong>\n  </p>\n\n</div>\n:::",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        512,
+        688
+      ],
+      "id": "3655e0ab-b313-4906-a351-36f538f58b5c",
+      "name": "Send denied message",
+      "webhookId": "6ef17079-23fd-4e19-a944-204cd4d44308",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "5pBeJd9Z7WxPKyEs",
+          "name": "Gmail - oepallaz@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## RRHH\n",
+        "height": 224,
+        "width": 432,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1328,
+        -384
+      ],
+      "id": "56e86295-255e-4144-ba41-625ce48e45ce",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Error messages",
+        "height": 272,
+        "width": 1680,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        368,
+        240
+      ],
+      "id": "2a2df2b8-9943-41a2-b713-b80e84df2f2f",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "1249ddb29248e1e824dbe988e4871f9285f0a6ed0992908e9c8996193f0f833a@group.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "n8n course - rrhh employees vacations"
+        },
+        "start": "={{ $('On form submission').item.json.startDate }}",
+        "end": "={{ $('On form submission').item.json.endDate}}",
+        "additionalFields": {
+          "description": "={{ $('On form submission').item.json.completeName }} Time off\n\n\n  Employee:\n  {{ $('On form submission').item.json.completeName }}\n\n  Email:\n  {{ $('On form submission').item.json.email }}\n\n  Start date::\n  {{ $('On form submission').item.json.startDate }}\n\n  End date::\n  {{ $('On form submission').item.json.endDate }}\n\n  Days requested:\n  {{ $('calculate daysRequested').item.json.daysRequested }}\n\n  Requested at:\n  {{ $('On form submission').item.json.submittedAt }}\n\n  Comments:\n  {{ $('On form submission').item.json.comments }}\n\n",
+          "summary": "={{ $('On form submission').item.json.completeName }} vacations"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        2128,
+        80
+      ],
+      "id": "5edb7318-869e-43ec-87a0-680c956741f3",
+      "name": "Create an employee vacation event",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "zSNZ9H3Mgy7pEgxu",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "value": "public",
+          "mode": "list",
+          "cachedResultName": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "rh_days_off",
+          "mode": "list",
+          "cachedResultName": "rh_days_off"
+        },
+        "where": {
+          "values": [
+            {
+              "column": "email",
+              "value": "={{ $('On form submission').item.json.email }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        912,
+        0
+      ],
+      "id": "e883f4e5-fa9e-4c29-9e4f-2e56e8979a5c",
+      "name": "Get employee info",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "bloYerYqShUoXn5a",
+          "name": "Supabase - n8n Project"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n\"daysRequested\": {{\n(\n  $json.endDate.toDateTime()\n  -\n  $json.startDate.toDateTime()\n)\n/\n(1000 * 60 * 60 * 24)\n}}\n}\n",
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        240,
+        0
+      ],
+      "id": "d27c6b4a-ab48-427c-b1b7-af36d979045d",
+      "name": "calculate daysRequested"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "schema": {
+          "__rl": true,
+          "value": "public",
+          "mode": "list",
+          "cachedResultName": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "rh_days_off",
+          "mode": "list",
+          "cachedResultName": "rh_days_off"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('Get employee info').item.json.id }}",
+            "vacation_days": "={{ $('Get employee info').item.json.vacation_days - $('calculate daysRequested').item.json.daysRequested}}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "vacation_days",
+              "displayName": "vacation_days",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "sick_days",
+              "displayName": "sick_days",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2128,
+        -128
+      ],
+      "id": "388e31de-9e42-40e0-b704-1328190ddffa",
+      "name": "Update employee available days off",
+      "credentials": {
+        "postgres": {
+          "id": "bloYerYqShUoXn5a",
+          "name": "Supabase - n8n Project"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Email notifications \n",
+        "height": 304,
+        "width": 2112,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        352,
+        592
+      ],
+      "id": "862de643-973e-49e2-b034-7607bd2f37c8",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('On form submission').item.json.email }}",
+        "subject": "Response to the Request for Time Off",
+        "message": "=<div style=\"font-family: Arial, Helvetica, sans-serif; max-width: 650px; margin: 0 auto; color: #333; line-height: 1.6;\">\n\n  <h1 style=\"font-size: 24px; color: #1f2937; margin-bottom: 24px;\">\n    Response to the Request for Time Off\n  </h1>\n\n  <p>\n    Dear <strong>{{ $('On form submission').item.json.completeName }}</strong>,\n  </p>\n\n  <p>\n    Thank you for submitting your request for time off. We are pleased to\n    inform you that your request has been <strong>approved</strong>.\n  </p>\n\n  <!-- Request Details -->\n  <div style=\"\n    margin: 24px 0;\n    padding: 20px;\n    background-color: #f8f9fa;\n    border: 1px solid #e5e7eb;\n    border-radius: 8px;\n  \">\n\n    <h2 style=\"\n      font-size: 17px;\n      color: #1f2937;\n      margin: 0 0 16px 0;\n    \">\n      Request Details\n    </h2>\n\n    <p style=\"margin: 8px 0;\">\n      <strong>Employee:</strong>\n      {{ $('On form submission').item.json.completeName }}\n    </p>\n\n    <p style=\"margin: 8px 0;\">\n      <strong>Start date:</strong>\n      {{ $('On form submission').item.json.startDate }}\n    </p>\n\n    <p style=\"margin: 8px 0;\">\n      <strong>End date:</strong>\n      {{ $('On form submission').item.json.endDate }}\n    </p>\n\n    <p style=\"margin: 8px 0;\">\n      <strong>Days requested:</strong>\n      {{ $('calculate daysRequested').item.json.daysRequested }}\n    </p>\n\n    <p style=\"margin: 8px 0;\">\n      <strong>Comments:</strong>\n      {{ $('On form submission').item.json.comments }}\n    </p>\n\n    <p style=\"margin: 8px 0;\">\n      <strong>Requested at:</strong>\n      {{ $('On form submission').item.json.submittedAt }}\n    </p>\n\n  </div>\n\n\n  <p>\n    If you have any questions regarding this decision, please contact HR.\n  </p>\n\n  <p style=\"margin-top: 32px;\">\n    Best regards,<br>\n    <strong>HHRR</strong>\n  </p>\n\n</div>\n:::",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2160,
+        688
+      ],
+      "id": "b80adb2e-9e33-4148-aaa0-4e0eced7ff02",
+      "name": "Send approved message",
+      "webhookId": "54fafa9f-944f-460a-8de4-42dc0518b3c6",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "5pBeJd9Z7WxPKyEs",
+          "name": "Gmail - oepallaz@gmail.com"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "calculate daysRequested",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "startDate is at least in 7 days?": {
+      "main": [
+        [
+          {
+            "node": "request has at least 1 day?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "7 days validation - error message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "request has at least 1 day?": {
+      "main": [
+        [
+          {
+            "node": "Get employee info",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "1 day validation - error message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has available days": {
+      "main": [
+        [
+          {
+            "node": "send discord message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "available days validation - error message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "7 days validation - error message": {
+      "main": [
+        [
+          {
+            "node": "Send denied message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "1 day validation - error message": {
+      "main": [
+        [
+          {
+            "node": "Send denied message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "available days validation - error message": {
+      "main": [
+        [
+          {
+            "node": "Send denied message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "send discord message": {
+      "main": [
+        [
+          {
+            "node": "Wait manager revision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait manager revision": {
+      "main": [
+        [
+          {
+            "node": "was approved?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "was approved?": {
+      "main": [
+        [
+          {
+            "node": "Create an employee vacation event",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Update employee available days off",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send approved message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "manager revision - deny message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "manager revision - deny message": {
+      "main": [
+        [
+          {
+            "node": "Send denied message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get employee info": {
+      "main": [
+        [
+          {
+            "node": "Has available days",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "calculate daysRequested": {
+      "main": [
+        [
+          {
+            "node": "startDate is at least in 7 days?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "badd68c3-3bf0-4dec-a58d-adb0f6e3e472",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "91132d1ddf193cca6be26753e109a20d0151cd79f07911fa86d4408139f34e6d"
+  },
+  "id": "CS5J777rJXKkkn8B",
+  "tags": []
+}
