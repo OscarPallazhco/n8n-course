@@ -1,0 +1,793 @@
+{
+  "name": "scraping-courses",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -224,
+        48
+      ],
+      "id": "c9f4ebae-e615-4dc8-adee-da70304c2b36",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -224,
+        -112
+      ],
+      "id": "32bd7a8b-a3d6-4d30-8a4d-f30d61791dcd",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "7689d86e-d19d-441e-9f36-08d68d73ed3f",
+              "leftValue": "={{ $json.urls }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "b4f9ff54-fb24-4990-9eb3-817720e7f40a",
+              "leftValue": "={{ $json.urls }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        272,
+        -32
+      ],
+      "id": "0ee8e463-e2ac-4cd8-b5a6-af6d61d3e1da",
+      "name": "Url exist"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1Jg4JXIylkuNAbvvVpN6fT2XQrwk3TwFGBHhUzRYbzFM",
+          "mode": "list",
+          "cachedResultName": "urls_to_scrape_n8n_course",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Jg4JXIylkuNAbvvVpN6fT2XQrwk3TwFGBHhUzRYbzFM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Jg4JXIylkuNAbvvVpN6fT2XQrwk3TwFGBHhUzRYbzFM/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        64,
+        -32
+      ],
+      "id": "4adcc7f1-ab83-4d69-8869-78b678c6c7e7",
+      "name": "Get urls from sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5NPaHPnEb6XpvIqS",
+          "name": "Google Sheets - oepallaz@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.urls }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        496,
+        -32
+      ],
+      "id": "a886e73f-b21f-4d1b-912e-ff42072e236c",
+      "name": "Get Html from the site"
+    },
+    {
+      "parameters": {
+        "html": "={{ $json.data }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.markdown",
+      "typeVersion": 1,
+      "position": [
+        704,
+        -32
+      ],
+      "id": "84cfc0f2-534d-4a7d-ba27-4f393926a2e8",
+      "name": "html to md"
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\n\n// Get the text\nconst text = item.output?.[0].content?.[0]?.text || ''\n\n// Remove Markdown code fences\nconst cleanText = text\n  .replace(/^```json\\s*/i, '')\n  .replace(/\\s*```$/i, '')\n  .trim();\n\n// Convert string to JSON\nconst data = JSON.parse(cleanText);\n\nreturn data;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1280,
+        -32
+      ],
+      "id": "86dbfe49-5b57-4d39-90e8-5d06505b345c",
+      "name": "Parse openAI reponse"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "name": "Replace Me",
+      "typeVersion": 1,
+      "position": [
+        1840,
+        512
+      ],
+      "id": "8ea32468-b570-4184-b29d-7a90c4e7c0cf"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1Vr6A5l1PC1NdLEzwAnExDR4zStpR3DgyNCBIfaGEjJs",
+          "mode": "list",
+          "cachedResultName": "info_scraped_n8n_course",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Vr6A5l1PC1NdLEzwAnExDR4zStpR3DgyNCBIfaGEjJs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Vr6A5l1PC1NdLEzwAnExDR4zStpR3DgyNCBIfaGEjJs/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $json.courseName }}",
+            "Description": "={{ $json.description }}",
+            "Category": "={{ $json.category }}",
+            "Instructor": "={{ $json.instructor }}",
+            "Devtalles": "={{ $json.devtallesUrl }}",
+            "Udemy": "={{ $json.udemyUrl }}"
+          },
+          "matchingColumns": [
+            "Name"
+          ],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Description",
+              "displayName": "Description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Category",
+              "displayName": "Category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Instructor",
+              "displayName": "Instructor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Syllabus",
+              "displayName": "Syllabus",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Devtalles",
+              "displayName": "Devtalles",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Udemy",
+              "displayName": "Udemy",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1840,
+        192
+      ],
+      "id": "9035746d-1275-4eee-ab4a-80d9c9113124",
+      "name": "Update info scraped in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5NPaHPnEb6XpvIqS",
+          "name": "Google Sheets - oepallaz@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1792,
+        -32
+      ],
+      "id": "376d2aa4-2a55-4950-b675-37aa477849a1",
+      "name": "Iterate courses"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.firecrawl.dev/v2/scrape",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer fc-cc7daf2614bc40c49fff24aa4510ffe9"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"url\": \"{{ $json.Udemy }}\",\n  \"onlyMainContent\": true,\n  \"maxAge\": 172800000,\n  \"parsers\": [\n    \"pdf\"\n  ],\n  \"formats\": [\n    \"markdown\"\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2048,
+        192
+      ],
+      "id": "27c494d3-7260-40e1-a358-d51214f66be8",
+      "name": "Use Firecrawl for skip web protections"
+    },
+    {
+      "parameters": {
+        "folderId": "1apKmIdT821e87SaoqelG9PBp8WJFn9FR",
+        "title": "={{ $json.data.metadata.title.replaceAll(':', '-').replaceAll('|', '-') }} - Syllabus"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        2256,
+        192
+      ],
+      "id": "91b38983-49ff-4504-83b4-878495ae68df",
+      "name": "Create syllabus document",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "XLJL3n5VH4eibuS8",
+          "name": "oepallaz@gmail.com - google docs access"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $('Create syllabus document').item.json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "={{ $json.output[0].content[0].text.information }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        2944,
+        192
+      ],
+      "id": "66ae8d7b-3e4c-4b86-9a43-1513d8d1aa30",
+      "name": "Fill out document with course info",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "XLJL3n5VH4eibuS8",
+          "name": "oepallaz@gmail.com - google docs access"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-5-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-5-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "=# Información\nEres un asistente para extraer datos de un sitio web, se te dará la información en formato Markdown, y necesito que retornes la información en el formato deseado.\n\nNo retornes nada más de lo que te necesito.\n\n## Ejemplo de salida\nLa información de salida, en un formato que Google docs pueda interpretar, con saltos de linea y demás.\n\n{\n  information: 'XXX' \n}"
+            },
+            {
+              "content": "={{ $('Use Firecrawl for skip web protections').item.json.data.markdown }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {
+          "textFormat": {
+            "textOptions": {
+              "type": "json_object"
+            }
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        2640,
+        192
+      ],
+      "id": "25ebb437-f96c-4c87-a788-ca3a4af0e33c",
+      "name": "Get course info from html scraped",
+      "credentials": {
+        "openAiApi": {
+          "id": "prlduP9ubln1zbRT",
+          "name": "oepallaz@gmail.com - n8n-course-secret-key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1Vr6A5l1PC1NdLEzwAnExDR4zStpR3DgyNCBIfaGEjJs",
+          "mode": "list",
+          "cachedResultName": "info_scraped_n8n_course",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Vr6A5l1PC1NdLEzwAnExDR4zStpR3DgyNCBIfaGEjJs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Vr6A5l1PC1NdLEzwAnExDR4zStpR3DgyNCBIfaGEjJs/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $('Iterate courses').item.json.courseName }}",
+            "Syllabus": "=https://docs.google.com/document/d/{{ $json.id }}"
+          },
+          "matchingColumns": [
+            "Name"
+          ],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Description",
+              "displayName": "Description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Category",
+              "displayName": "Category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Instructor",
+              "displayName": "Instructor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Syllabus",
+              "displayName": "Syllabus",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Devtalles",
+              "displayName": "Devtalles",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Udemy",
+              "displayName": "Udemy",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2464,
+        192
+      ],
+      "id": "66e5a2fd-3522-42b5-a7ae-d4a2fde4b44d",
+      "name": "Update document info cel",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5NPaHPnEb6XpvIqS",
+          "name": "Google Sheets - oepallaz@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.slice(0, 2);"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1552,
+        -32
+      ],
+      "id": "c8d8777f-c04c-4f7e-a9ad-5ad0f91fdc62",
+      "name": "Avoid too much api calls"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-5-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-5-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "=# Información\nEres un asistente para extraer datos de un sitio web, se te dará la información en formato Markdown, y necesito que retornes la información en el formato deseado.\n\nNo retornes nada más de lo que te necesito.\n\nSi el URL no está completo, completarlo usando el URL que también te proveeran del sitio del cual se extrae la información.\n\n## Objetivo\nInformación que necesitas extraer y encontrar: \n\n- Nombre del instructor (instructorName)\n- url del curso de Udemy (udemyUrl) (si lo tiene, si no null)\n- url del curso de DevTalles (devtallesUrl) \n- Nombre del curso (courseName)\n- Descripción del curso (description)\n- Categoría del curso (category)\n- Otra información relevante (additionalInformation)\n\n## Ejemplo de salida\nNecesito un json con la siguiente estructura:\n[\n{\n  courseName: 'XXX',\n  instructor: 'XXX',\n  devtallesUrl: 'https://xxx',\n  udemyUrl: 'https://xxx',\n  description: 'xxx',\n  category: 'xxx',\n  additionalInformation: 'xxxx' \n},\n{\n  courseName: 'XXX',\n  instructor: 'XXX',\n  devtallesUrl: 'https://xxx',\n  udemyUrl: 'https://xxx',\n  description: 'xxx',\n  category: 'xxx',\n  additionalInformation: 'xxxx' \n}\n]"
+            },
+            {
+              "content": "=# URL del sitio\n{{ $('Url exist').item.json.urls }}\n\n# Data a extraer\n{{ $json.data }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        912,
+        -32
+      ],
+      "id": "2a02ad8c-6c12-41de-b8fc-c7b8986884d1",
+      "name": "Use openAI to get info from html",
+      "credentials": {
+        "openAiApi": {
+          "id": "prlduP9ubln1zbRT",
+          "name": "oepallaz@gmail.com - n8n-course-secret-key"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get urls from sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get urls from sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get urls from sheet": {
+      "main": [
+        [
+          {
+            "node": "Url exist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Url exist": {
+      "main": [
+        [
+          {
+            "node": "Get Html from the site",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Html from the site": {
+      "main": [
+        [
+          {
+            "node": "html to md",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "html to md": {
+      "main": [
+        [
+          {
+            "node": "Use openAI to get info from html",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse openAI reponse": {
+      "main": [
+        [
+          {
+            "node": "Avoid too much api calls",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace Me": {
+      "main": [
+        [
+          {
+            "node": "Iterate courses",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update info scraped in sheet": {
+      "main": [
+        [
+          {
+            "node": "Use Firecrawl for skip web protections",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Iterate courses": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Update info scraped in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Use Firecrawl for skip web protections": {
+      "main": [
+        [
+          {
+            "node": "Create syllabus document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create syllabus document": {
+      "main": [
+        [
+          {
+            "node": "Update document info cel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fill out document with course info": {
+      "main": [
+        [
+          {
+            "node": "Replace Me",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get course info from html scraped": {
+      "main": [
+        [
+          {
+            "node": "Fill out document with course info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update document info cel": {
+      "main": [
+        [
+          {
+            "node": "Get course info from html scraped",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Avoid too much api calls": {
+      "main": [
+        [
+          {
+            "node": "Iterate courses",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Use openAI to get info from html": {
+      "main": [
+        [
+          {
+            "node": "Parse openAI reponse",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "6353ce7d-ab56-4520-9487-fd195c35b6d0",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "91132d1ddf193cca6be26753e109a20d0151cd79f07911fa86d4408139f34e6d"
+  },
+  "id": "qM5K9s0ON0NI3LNc",
+  "tags": []
+}
