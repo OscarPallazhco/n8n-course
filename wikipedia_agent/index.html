@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>WikiBot — Wikipedia Research Assistant</title>
+
+    <!-- n8n Chat styles — kept completely untouched -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      /* =========================
+         PAGE ONLY
+         ========================= */
+
+      .wikibot-page {
+        min-height: 100vh;
+        color: #172033;
+        background:
+          radial-gradient(
+            circle at 50% -20%,
+            rgba(99, 102, 241, 0.12),
+            transparent 45%
+          ),
+          #f8fafc;
+
+        font-family:
+          Inter,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+
+        overflow-x: hidden;
+      }
+
+      .wikibot-page *,
+      .wikibot-page *::before,
+      .wikibot-page *::after {
+        box-sizing: border-box;
+      }
+
+      .wikibot-page::before {
+        content: "";
+        position: fixed;
+        width: 420px;
+        height: 420px;
+        border-radius: 50%;
+        background: rgba(59, 130, 246, 0.06);
+        filter: blur(80px);
+        top: 15%;
+        left: -180px;
+        pointer-events: none;
+      }
+
+      .wikibot-page::after {
+        content: "";
+        position: fixed;
+        width: 380px;
+        height: 380px;
+        border-radius: 50%;
+        background: rgba(139, 92, 246, 0.06);
+        filter: blur(80px);
+        bottom: -120px;
+        right: -120px;
+        pointer-events: none;
+      }
+
+      /* Navigation */
+
+      .wikibot-nav {
+        width: 100%;
+        padding: 24px 6%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: relative;
+        z-index: 1;
+      }
+
+      .wikibot-logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 700;
+        font-size: 18px;
+        letter-spacing: -0.3px;
+      }
+
+      .wikibot-logo-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 11px;
+        display: grid;
+        place-items: center;
+        color: white;
+        font-size: 17px;
+        background: linear-gradient(135deg, #4f46e5, #7c3aed);
+        box-shadow: 0 8px 20px rgba(79, 70, 229, 0.2);
+      }
+
+      .wikibot-nav-label {
+        color: #64748b;
+        font-size: 14px;
+      }
+
+      /* Main hero */
+
+      .wikibot-main {
+        min-height: calc(100vh - 90px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 60px 24px 150px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .wikibot-hero {
+        max-width: 760px;
+      }
+
+      .wikibot-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 13px;
+        border: 1px solid #e2e8f0;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.75);
+        backdrop-filter: blur(10px);
+        color: #64748b;
+        font-size: 13px;
+        margin-bottom: 24px;
+        box-shadow: 0 4px 15px rgba(15, 23, 42, 0.03);
+      }
+
+      .wikibot-status-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #22c55e;
+        box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.1);
+      }
+
+      .wikibot-title {
+        font-size: clamp(48px, 8vw, 78px);
+        line-height: 0.98;
+        letter-spacing: -4px;
+        font-weight: 800;
+        margin: 0 0 24px;
+        color: #0f172a;
+      }
+
+      .wikibot-title span {
+        background: linear-gradient(135deg, #4f46e5, #7c3aed);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+
+      .wikibot-subtitle {
+        max-width: 590px;
+        margin: 0 auto 38px;
+        font-size: 18px;
+        line-height: 1.7;
+        color: #64748b;
+      }
+
+      /* Example questions */
+
+      .wikibot-suggestions {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .wikibot-suggestion {
+        padding: 10px 15px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.8);
+        border: 1px solid #e2e8f0;
+        color: #475569;
+        font-size: 13px;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
+      }
+
+      /* Footer */
+
+      .wikibot-footer {
+        text-align: center;
+        padding: 20px;
+        color: #94a3b8;
+        font-size: 12px;
+        position: relative;
+        z-index: 1;
+      }
+
+      @media (max-width: 600px) {
+        .wikibot-nav {
+          padding: 18px 20px;
+        }
+
+        .wikibot-nav-label {
+          display: none;
+        }
+
+        .wikibot-main {
+          padding: 50px 20px 130px;
+        }
+
+        .wikibot-title {
+          letter-spacing: -2.5px;
+        }
+
+        .wikibot-subtitle {
+          font-size: 16px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+
+    <!-- Everything here belongs to the landing page.
+         n8n's chat widget remains outside this container,
+         so its original styling is preserved. -->
+
+    <div class="wikibot-page">
+
+      <nav class="wikibot-nav">
+        <div class="wikibot-logo">
+          <div class="wikibot-logo-icon">W</div>
+          <span>WikiBot</span>
+        </div>
+
+        <div class="wikibot-nav-label">
+          Wikipedia Research Assistant
+        </div>
+      </nav>
+
+      <main class="wikibot-main">
+        <section class="wikibot-hero">
+
+          <div class="wikibot-badge">
+            <span class="wikibot-status-dot"></span>
+            Ready to research
+          </div>
+
+          <h1 class="wikibot-title">
+            Ask anything.<br />
+            <span>Learn something.</span>
+          </h1>
+
+          <p class="wikibot-subtitle">
+            A simple research assistant that searches Wikipedia,
+            explores topics, and helps you understand information faster.
+          </p>
+
+          <div class="wikibot-suggestions">
+            <div class="wikibot-suggestion">
+              What caused World War I?
+            </div>
+
+            <div class="wikibot-suggestion">
+              Explain quantum mechanics
+            </div>
+
+            <div class="wikibot-suggestion">
+              Who was Marie Curie?
+            </div>
+          </div>
+
+        </section>
+      </main>
+
+      <footer class="wikibot-footer">
+        Powered by Wikipedia &amp; n8n
+      </footer>
+
+    </div>
+
+    <!-- Original n8n Chat -->
+    <script type="module">
+      import { createChat } from
+        "https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js";
+
+      createChat({
+        webhookUrl:
+          "http://localhost:5678/webhook/e88fda36-9042-47b1-ad6f-5f0846b93580/chat"
+      });
+    </script>
+
+  </body>
+</html>
