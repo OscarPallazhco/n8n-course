@@ -1,0 +1,155 @@
+{
+  "name": "Google Calendar MCP Server",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "5c722ebd-973d-42b0-afde-d9929433e020"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+      "typeVersion": 2,
+      "position": [
+        48,
+        0
+      ],
+      "id": "18548f75-7b65-4c36-8207-4e41cf782b24",
+      "name": "Google Calendar MCP Server",
+      "webhookId": "5c722ebd-973d-42b0-afde-d9929433e020"
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "oepallaz@gmail.com",
+          "mode": "list",
+          "cachedResultName": "oepallaz@gmail.com"
+        },
+        "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', ``, 'string') }}",
+        "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', ``, 'string') }}",
+        "useDefaultReminders": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Use_Default_Reminders', ``, 'boolean') }}",
+        "additionalFields": {
+          "description": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Description', ``, 'string') }}",
+          "summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Summary', ``, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        16,
+        224
+      ],
+      "id": "e06de772-3281-4d4b-84be-a4cc574f8c0a",
+      "name": "create_google_calendar_event",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "zSNZ9H3Mgy7pEgxu",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "oepallaz@gmail.com",
+          "mode": "list",
+          "cachedResultName": "oepallaz@gmail.com"
+        },
+        "returnAll": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Return_All', ``, 'boolean') }}",
+        "timeMin": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('After', ``, 'string') }}",
+        "timeMax": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Before', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        192,
+        224
+      ],
+      "id": "698d0ab2-ccd6-4d54-a390-02952c77b2e5",
+      "name": "get_many_google_calendar_events",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "zSNZ9H3Mgy7pEgxu",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "calendar": {
+          "__rl": true,
+          "value": "oepallaz@gmail.com",
+          "mode": "list",
+          "cachedResultName": "oepallaz@gmail.com"
+        },
+        "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        368,
+        224
+      ],
+      "id": "9fc2dd6e-9e80-478c-8666-eeef866b5245",
+      "name": "delete_google_calendar_event",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "zSNZ9H3Mgy7pEgxu",
+          "name": "Google Calendar account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "create_google_calendar_event": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Calendar MCP Server",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_many_google_calendar_events": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Calendar MCP Server",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "delete_google_calendar_event": {
+      "ai_tool": [
+        [
+          {
+            "node": "Google Calendar MCP Server",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "07b1c0d6-47d2-45b4-b7cc-8704283778c8",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "91132d1ddf193cca6be26753e109a20d0151cd79f07911fa86d4408139f34e6d"
+  },
+  "id": "taQSRJVyEIXfusJk",
+  "tags": []
+}

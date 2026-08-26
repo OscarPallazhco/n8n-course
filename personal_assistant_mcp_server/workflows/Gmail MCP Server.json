@@ -1,0 +1,138 @@
+{
+  "name": "Gmail MCP Server",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "c0a0f41a-9d5e-4946-b883-9465c11a83be"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+      "typeVersion": 2,
+      "position": [
+        64,
+        0
+      ],
+      "id": "35f0fa8e-35c4-4e02-88aa-e579fd054078",
+      "name": "Gmail MCP Server",
+      "webhookId": "c0a0f41a-9d5e-4946-b883-9465c11a83be"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To', ``, 'string') }}",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        224
+      ],
+      "id": "f8e3444e-4971-467f-bf63-84687388d680",
+      "name": "send_gmail_message",
+      "webhookId": "f4810781-369e-41ba-b555-0c194054d0e3",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "5pBeJd9Z7WxPKyEs",
+          "name": "Gmail - oepallaz@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "draft",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "emailType": "html",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [
+        160,
+        224
+      ],
+      "id": "abd023f3-90e7-4765-804b-22cbfbf3624a",
+      "name": "create_gmail_draft",
+      "webhookId": "635eff71-b5ae-4595-a069-529a303b9cc0",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "5pBeJd9Z7WxPKyEs",
+          "name": "Gmail - oepallaz@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "limit": 10,
+        "simple": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Simplify', ``, 'boolean') }}",
+        "filters": {},
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [
+        336,
+        224
+      ],
+      "id": "c8fb0d54-c68d-42f5-9d2b-9da354c14034",
+      "name": "get_many_gmail_messages",
+      "webhookId": "b0f44180-ebeb-4298-8d98-5df16fe9d1ec",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "5pBeJd9Z7WxPKyEs",
+          "name": "Gmail - oepallaz@gmail.com"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "send_gmail_message": {
+      "ai_tool": [
+        [
+          {
+            "node": "Gmail MCP Server",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create_gmail_draft": {
+      "ai_tool": [
+        [
+          {
+            "node": "Gmail MCP Server",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_many_gmail_messages": {
+      "ai_tool": [
+        [
+          {
+            "node": "Gmail MCP Server",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "7395e8db-84e2-4d75-96b0-565548e949df",
+  "meta": {
+    "instanceId": "91132d1ddf193cca6be26753e109a20d0151cd79f07911fa86d4408139f34e6d"
+  },
+  "id": "tZ97ly88jFdT6B8r",
+  "tags": []
+}

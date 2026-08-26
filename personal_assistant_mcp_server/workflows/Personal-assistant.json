@@ -1,0 +1,237 @@
+{
+  "name": "Personal-assistant",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "62890fe4-3412-4b35-b014-1f50b3664940",
+      "name": "When chat message received",
+      "webhookId": "0a6877d9-d621-4824-af6c-fd215dbb12ea"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        80,
+        208
+      ],
+      "id": "cd17e8f1-abc9-414e-ac8d-b16e558c0ab9",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "prlduP9ubln1zbRT",
+          "name": "oepallaz@gmail.com - n8n-course-secret-key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        224,
+        208
+      ],
+      "id": "c1d5fc0d-124b-43b3-b6fd-ebaabf2cc367",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=# Description\n- You are an AI assistant who efficiently manages emails and the calendar.\n- Your responses should be short, clear, and to the point.\n- Always prioritize organization and productivity.\n\n# Calendar Rules\n- Work hours: 8 a.m. to 4 p.m. (Monday through Friday).\n- Do not schedule appointments outside of work hours or on weekends.\n- Do not allow schedule conflicts: check availability before scheduling.\n- Always confirm before creating, modifying, or canceling events.\n- Send reminders 15 minutes before each event.\n- Summarize daily events at the start of the day and weekly events first thing on Mondays.\n\n# Email Rules\n- Reading: Always in plain text, no HTML.\n- Before sending an email, always create a draft (in HTML format) and send it to yourself for confirmation before sending it.\n- when sending the email, create its structure in HTML format\n- Sorting: Group by priority (High > Medium > Low).\n- Ignore: Promotional emails, spam, and irrelevant notifications.\n- Summarize important emails at the start of the day.\n- Always confirm before deleting or archiving emails.\n- Suggest quick replies for high-priority emails.\n- Do not use “[Your Name]”; always use “Eduardo Pallazhco” instead.\n\n# Tools\n- Calendar access: create, edit, cancel, and view events.\n- Email access: read, compose, sort, and send emails.\n- Can be integrated with to-do lists and reminders to improve productivity.\n- Wikipedia: You can access to wikipedia to search information you need.\n- Pokemon finder tool: You have access to this tool that can be used to get pokemons info.\n\n# The current date is:\n{{ $now }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "e1f04376-3123-4cda-83b8-b868ace4b0b3",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolWikipedia",
+      "typeVersion": 1,
+      "position": [
+        576,
+        96
+      ],
+      "id": "1fda2bc7-cd9b-45f4-a72d-ee654683d803",
+      "name": "Wikipedia"
+    },
+    {
+      "parameters": {
+        "description": "Tool for get pokemons info",
+        "workflowId": {
+          "__rl": true,
+          "value": "KKafDrg8oVO86ZrV",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/KKafDrg8oVO86ZrV",
+          "cachedResultName": "Pokemon-finder-tool"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        576,
+        608
+      ],
+      "id": "fbe8c894-50be-4ede-941f-95e7bea2106a",
+      "name": "Pokemon finder tool"
+    },
+    {
+      "parameters": {
+        "endpointUrl": "http://localhost:5678/mcp/c0a0f41a-9d5e-4946-b883-9465c11a83be",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1.2,
+      "position": [
+        576,
+        272
+      ],
+      "id": "db861a7f-a7c8-47b8-bb92-bd59a77377d3",
+      "name": "Gmail MCP Client"
+    },
+    {
+      "parameters": {
+        "endpointUrl": "http://localhost:5678/mcp/5c722ebd-973d-42b0-afde-d9929433e020",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1.2,
+      "position": [
+        576,
+        432
+      ],
+      "id": "7cc634d6-670e-4959-929f-2087a3ca5b9c",
+      "name": "Google Calendar MCP Client"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        []
+      ]
+    },
+    "Wikipedia": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pokemon finder tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail MCP Client": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Calendar MCP Client": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "5d303f0f-d169-4b04-be78-87463c00bd4a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "91132d1ddf193cca6be26753e109a20d0151cd79f07911fa86d4408139f34e6d"
+  },
+  "id": "xdR1dg2S1S6Xz9Me",
+  "tags": []
+}

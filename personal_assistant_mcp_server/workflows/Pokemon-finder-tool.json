@@ -1,0 +1,123 @@
+{
+  "name": "Pokemon-finder-tool",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "jsonExample",
+        "jsonExample": "{\n  \"name\": \"pikachu\"\n}"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "d321e5b9-7e5e-450a-890c-48af9de6ad7e",
+      "name": "Entry data"
+    },
+    {
+      "parameters": {
+        "url": "=https://pokeapi.co/api/v2/pokemon/{{ $json.name }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "80614e35-f607-4ce6-a685-fdc95ff7d9ab",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c972bc23-2669-4db0-b831-11816310edc7",
+              "name": "id",
+              "value": "={{ $json.id }}",
+              "type": "number"
+            },
+            {
+              "id": "c53c3277-12e9-4c0a-b8b5-45be65d20fb5",
+              "name": "name",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "4d9e6f96-bf4c-4b12-a206-41603606b387",
+              "name": "species.name",
+              "value": "={{ $json.species.name }}",
+              "type": "string"
+            },
+            {
+              "id": "cc19ee8f-1876-4606-b797-ce44f8173cec",
+              "name": "sprites.front_default",
+              "value": "={{ $json.sprites.front_default }}",
+              "type": "string"
+            },
+            {
+              "id": "5d403abb-d6e0-4ae7-b8c4-4ba60da9b9c4",
+              "name": "sprites.back_default",
+              "value": "={{ $json.sprites.back_default }}",
+              "type": "string"
+            },
+            {
+              "id": "23f39e3e-6c50-4899-915d-375ac84a1ace",
+              "name": "weight",
+              "value": "={{ $json.weight }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        416,
+        0
+      ],
+      "id": "862ff1bf-8fb4-48bc-9098-e62dbe6fbaee",
+      "name": "Edit Fields"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Entry data": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "ba686131-069b-4230-9e7b-0ff73220fb3a",
+  "meta": {
+    "instanceId": "91132d1ddf193cca6be26753e109a20d0151cd79f07911fa86d4408139f34e6d"
+  },
+  "id": "KKafDrg8oVO86ZrV",
+  "tags": []
+}
