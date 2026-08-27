@@ -83,6 +83,9 @@ By testing multiple authentication methods against the same basic webhook, it be
 
 ## Screenshots
 
+![Workflow Authentication](./screenshots/Screenshot_112.png)
+
+---
 ![Workflow Authentication](./screenshots/Screenshot_97.png)
 
 ---
