@@ -1,0 +1,119 @@
+{
+  "name": "workflow_authentications",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "company/metrics/:company-id",
+        "authentication": "jwtAuth",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        768,
+        304
+      ],
+      "id": "eb9eacb4-11b0-4b97-92fd-4f3694e49b4b",
+      "name": "Webhook",
+      "webhookId": "afc8b025-1e6a-4878-801b-ca6a75610233",
+      "credentials": {
+        "jwtAuth": {
+          "id": "Bss3ZUuafinfZeeK",
+          "name": "JWT Auth - my-custom-test-jwt-auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"comapyId\":\"{{ $json.params['company-id'] }}\",\n  \"sales\": 3452231,\n  \"items\": 332125,\n  \"users\": 2332,\n  \"clients\": 3345,\n  \"conversionRate\": 4.7,\n  \"revenue\": 982345.55,\n  \"activeSessions\": 189,\n  \"newUsersToday\": 42,\n  \"topProduct\": {\n    \"id\": \"PRD-9845\",\n    \"name\": \"Wireless Noise-Cancelling Headphones\",\n    \"unitsSold\": 14231,\n    \"revenue\": 213456.78\n  },\n  \"traffic\": {\n    \"today\": 5432,\n    \"thisWeek\": 38765,\n    \"thisMonth\": 152347\n  },\n  \"lastUpdated\": \"2025-08-27T12:45:00Z\",\n  \"payload\": {{ $json.jwtPayload.toJsonString() }},\n  \"user\": {\n    \"name\": {{ $json.jwtPayload.name }},\n    \"isAdmin\": {{ $json.jwtPayload.admin }},\n    \"roles\": {{ $json.jwtPayload.roles.toJsonString() }}\n  }\n}\n ",
+        "includeOtherFields": "=",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1024,
+        304
+      ],
+      "id": "32cf0fd7-7c10-4983-979d-44c67ef9ac76",
+      "name": "Retornar información"
+    },
+    {
+      "parameters": {
+        "content": "# ¿Qué tipo de autenticación debo usar?\n\n### ¿El servicio externo ya soporta un método de autenticación específico?\n- **Sí** → Usa el que soporten.\n- **No** → Sigue leyendo.\n\n### ¿Necesitas acceso con tiempo limitado o metadatos del usuario?\n- **Sí** → Usa **JWT**.\n- **No** → Sigue leyendo.\n\n### ¿Estás usando una API key o token simple?\n- **Sí** → Usa **Header Auth**.\n- **No** → Sigue leyendo.\n\n### ¿El servicio soporta HTTP Basic Auth estándar?\n- **Sí** → Usa **Basic Auth**.\n- **No** → Usa **Header Auth** (más flexible).\n\n---\n\n## Ejemplos del mundo real:\n\n- **Basic Auth:**  \n  Conexión a sistemas empresariales como **Jira**, **Jenkins**, o sistemas **CRM** antiguos.\n\n- **Header Auth:**  \n  Integración con APIs modernas como **Slack**, **Discord**, o aplicaciones personalizadas que usan API keys.\n\n- **JWT:**  \n  Creación de **microservicios**, **backends de apps móviles**, o sistemas que requieren **permisos específicos por usuario**.\n\n\n\n\nEsta lista de puntos fue idea de: [Nate Herk | AI Automation](https://www.youtube.com/watch?v=3FfCRbq3XMs)\n",
+        "height": 880,
+        "width": 720,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "7503068b-dce6-495c-b642-7da2a772441d",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        1264,
+        304
+      ],
+      "id": "6c9c0684-da95-47f6-8563-06fe57d3c431",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Retornar información",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Retornar información": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "85f2dcdb-87e0-4e17-9716-f97992ed3626",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "91132d1ddf193cca6be26753e109a20d0151cd79f07911fa86d4408139f34e6d"
+  },
+  "id": "7Iep3LXh9iiHJFk6",
+  "tags": [
+    {
+      "name": "security",
+      "id": "fKCCOvFGVKsEmZtv",
+      "updatedAt": "2026-08-27T04:13:33.540Z",
+      "createdAt": "2026-08-27T04:13:33.540Z"
+    }
+  ]
+}
