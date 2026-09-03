@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>TechNova — Tecnología que te conecta</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f7f8fc;
+      color: #111827;
+    }
+
+    header {
+      background: rgba(255, 255, 255, 0.92);
+      border-bottom: 1px solid #e5e7eb;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(10px);
+    }
+
+    .navbar {
+      max-width: 1180px;
+      margin: auto;
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-size: 23px;
+      font-weight: 800;
+      letter-spacing: -1px;
+    }
+
+    .logo span {
+      color: #6366f1;
+    }
+
+    nav {
+      display: flex;
+      gap: 28px;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: #4b5563;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    nav a:hover {
+      color: #6366f1;
+    }
+
+    .hero {
+      max-width: 1180px;
+      margin: auto;
+      padding: 90px 24px 70px;
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      padding: 8px 14px;
+      background: #eef2ff;
+      color: #4f46e5;
+      border-radius: 30px;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+
+    .hero h1 {
+      font-size: clamp(42px, 6vw, 70px);
+      line-height: 1;
+      letter-spacing: -4px;
+      margin-bottom: 24px;
+    }
+
+    .hero h1 span {
+      color: #6366f1;
+    }
+
+    .hero p {
+      max-width: 550px;
+      font-size: 18px;
+      line-height: 1.7;
+      color: #6b7280;
+      margin-bottom: 30px;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 14px 22px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 14px;
+      transition: 0.2s;
+    }
+
+    .btn-primary {
+      background: #111827;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #374151;
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: white;
+      color: #111827;
+      border: 1px solid #e5e7eb;
+    }
+
+    .btn-secondary:hover {
+      border-color: #6366f1;
+      color: #6366f1;
+    }
+
+    .hero-card {
+      background: linear-gradient(145deg, #111827, #312e81);
+      min-height: 420px;
+      border-radius: 30px;
+      padding: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 30px 70px rgba(31, 41, 55, 0.2);
+    }
+
+    .hero-card::before {
+      content: "";
+      width: 280px;
+      height: 280px;
+      background: #818cf8;
+      border-radius: 50%;
+      position: absolute;
+      filter: blur(70px);
+      opacity: 0.5;
+    }
+
+    .device {
+      position: relative;
+      z-index: 1;
+      width: 260px;
+      height: 310px;
+      border-radius: 28px;
+      background: #f9fafb;
+      border: 8px solid #374151;
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.35);
+      padding: 18px;
+    }
+
+    .device-screen {
+      height: 100%;
+      border-radius: 18px;
+      background: linear-gradient(160deg, #eef2ff, #c7d2fe);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 70px;
+    }
+
+    .section {
+      max-width: 1180px;
+      margin: auto;
+      padding: 70px 24px;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 45px;
+    }
+
+    .section-header h2 {
+      font-size: 36px;
+      letter-spacing: -1.5px;
+      margin-bottom: 12px;
+    }
+
+    .section-header p {
+      color: #6b7280;
+    }
+
+    .products {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+    }
+
+    .product {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 20px;
+      padding: 22px;
+      transition: 0.25s;
+    }
+
+    .product:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 40px rgba(17, 24, 39, 0.08);
+    }
+
+    .product-image {
+      height: 210px;
+      border-radius: 16px;
+      background: #f3f4f6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 75px;
+      margin-bottom: 20px;
+    }
+
+    .product h3 {
+      font-size: 19px;
+      margin-bottom: 8px;
+    }
+
+    .product p {
+      color: #6b7280;
+      font-size: 14px;
+      line-height: 1.5;
+      margin-bottom: 18px;
+    }
+
+    .product-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .price {
+      font-size: 21px;
+      font-weight: 800;
+    }
+
+    .buy {
+      border: none;
+      background: #6366f1;
+      color: white;
+      padding: 10px 15px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .buy:hover {
+      background: #4f46e5;
+    }
+
+    .voice-section {
+      max-width: 1180px;
+      margin: 40px auto 80px;
+      padding: 55px 30px;
+      border-radius: 30px;
+      background: #111827;
+      color: white;
+      text-align: center;
+    }
+
+    .voice-section h2 {
+      font-size: 35px;
+      margin-bottom: 14px;
+    }
+
+    .voice-section p {
+      color: #cbd5e1;
+      max-width: 650px;
+      margin: auto;
+      line-height: 1.6;
+    }
+
+    footer {
+      border-top: 1px solid #e5e7eb;
+      padding: 30px 24px;
+      text-align: center;
+      color: #6b7280;
+      font-size: 14px;
+    }
+
+    @media (max-width: 800px) {
+      nav {
+        display: none;
+      }
+
+      .hero {
+        grid-template-columns: 1fr;
+        padding-top: 55px;
+      }
+
+      .products {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-card {
+        min-height: 350px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <header>
+    <div class="navbar">
+      <div class="logo">Tech<span>Nova</span></div>
+
+      <nav>
+        <a href="#inicio">Inicio</a>
+        <a href="#productos">Productos</a>
+        <a href="#asistente">Asistente IA</a>
+      </nav>
+    </div>
+  </header>
+
+
+  <!-- HERO -->
+  <main id="inicio">
+
+    <section class="hero">
+
+      <div>
+        <div class="hero-badge">
+          ⚡ Nueva generación de tecnología
+        </div>
+
+        <h1>
+          Tecnología que
+          <span>simplifica</span>
+          tu vida.
+        </h1>
+
+        <p>
+          Descubre smartphones, laptops, audífonos y accesorios
+          diseñados para hacer más fácil tu día a día.
+        </p>
+
+        <div class="hero-buttons">
+          <a href="#productos" class="btn btn-primary">
+            Ver productos
+          </a>
+
+          <a href="#asistente" class="btn btn-secondary">
+            Hablar con un experto
+          </a>
+        </div>
+      </div>
+
+
+      <div class="hero-card">
+        <div class="device">
+          <div class="device-screen">
+            📱
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+
+    <!-- PRODUCTOS -->
+    <section class="section" id="productos">
+
+      <div class="section-header">
+        <h2>Productos destacados</h2>
+        <p>Todo lo que necesitas, en un solo lugar.</p>
+      </div>
+
+
+      <div class="products">
+
+        <article class="product">
+
+          <div class="product-image">
+            💻
+          </div>
+
+          <h3>UltraBook Pro</h3>
+
+          <p>
+            Laptop ultraligera con alto rendimiento para trabajo,
+            estudio y creatividad.
+          </p>
+
+          <div class="product-bottom">
+            <div class="price">$899</div>
+            <button class="buy">Comprar</button>
+          </div>
+
+        </article>
+
+
+        <article class="product">
+
+          <div class="product-image">
+            🎧
+          </div>
+
+          <h3>SoundPods X</h3>
+
+          <p>
+            Audífonos inalámbricos con cancelación de ruido y
+            sonido envolvente.
+          </p>
+
+          <div class="product-bottom">
+            <div class="price">$149</div>
+            <button class="buy">Comprar</button>
+          </div>
+
+        </article>
+
+
+        <article class="product">
+
+          <div class="product-image">
+            ⌚
+          </div>
+
+          <h3>SmartWatch One</h3>
+
+          <p>
+            Mantente conectado con un smartwatch elegante,
+            inteligente y resistente.
+          </p>
+
+          <div class="product-bottom">
+            <div class="price">$199</div>
+            <button class="buy">Comprar</button>
+          </div>
+
+        </article>
+
+      </div>
+
+    </section>
+
+
+    <!-- SECCIÓN DEL ASISTENTE DE VOZ -->
+    <section class="voice-section" id="asistente">
+
+      <h2>¿Necesitas ayuda?</h2>
+
+      <p>
+        Habla con nuestro asistente virtual y descubre qué producto
+        se adapta mejor a tus necesidades.
+      </p>
+
+
+    </section>
+
+  </main>
+
+
+  <!-- FOOTER -->
+  <footer>
+    © 2026 TechNova — Tecnología para todos.
+  </footer>
+
+</body>
+</html>
