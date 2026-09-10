@@ -1,0 +1,996 @@
+{
+  "name": "telegram_assistant",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        -512,
+        400
+      ],
+      "id": "17341111-3e5f-4bfb-9a77-721133df79f7",
+      "name": "Telegram Trigger - message received",
+      "webhookId": "94c150b3-8bf6-44be-bdef-c6a861eda7fa",
+      "credentials": {
+        "telegramApi": {
+          "id": "kfvwYWkJUfwEQncB",
+          "name": "n8n_edu_test_2026_bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.giphy.com/v1/stickers/random?api_key=c7jRraNL5NghD3e63fy4vTJJlu2AtTwN&tag=Hi&rating=g",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        208,
+        -96
+      ],
+      "id": "10aa7ee6-5e22-4728-9ffe-f8c5b109b212",
+      "name": "Request giphy stickers"
+    },
+    {
+      "parameters": {
+        "operation": "sendSticker",
+        "chatId": "={{ $('Telegram Trigger - message received').item.json.message.chat.id }}",
+        "file": "={{ $json.data.images.original.webp }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2912,
+        -96
+      ],
+      "id": "3d321130-4c4c-4b42-9118-c46e894aa9a7",
+      "name": "Send a sticker",
+      "webhookId": "2b2c678b-c095-405a-b82e-c8d9394da37d",
+      "credentials": {
+        "telegramApi": {
+          "id": "kfvwYWkJUfwEQncB",
+          "name": "n8n_edu_test_2026_bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "/start",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "49580832-662e-4454-a835-7fcca784451b"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "/start"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "5e602446-cad9-4d84-a17a-a50bde90c51b",
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "text-message"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "8118964d-e71a-4813-b863-997b64edec7d",
+                    "leftValue": "={{ $json.message.voice }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "object",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "audio-message"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "00b92002-d8c6-4dff-bda3-7d34bf3053fb",
+                    "leftValue": "={{ $json.message.photo }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "array",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "image-message"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -304,
+        368
+      ],
+      "id": "c4cec88c-2373-42f9-bf99-a16ffccc9d9f",
+      "name": "message type"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"text\": \"{{ $('Telegram Trigger - message received').item.json.message.text }}\",\n  \"type\": \"message\",\n  \"ai\": \"\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        1088,
+        192
+      ],
+      "id": "61057efe-7115-4d26-b35a-b3ebff5cbddf",
+      "name": "message data"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.text }}",
+        "options": {
+          "systemMessage": "=## Description\n- You are an assistant who helps people with general knowledge questions\n- Your responses should be very short—1 or 2 lines maximum. \n\n- Sometimes you will receive messages containing AI-powered image preprocessing; the response has not yet been sent to the user, so your task is just to send this preprocessing as a message to the user without processing the user prompt.\n\n## AI-powered image preprocessing:\n{{ $json.ai }}\n\n## Tools\n“send_telegram” allows you to send Telegram messages"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1776,
+        192
+      ],
+      "id": "96d94060-5c7d-4eca-9d3d-ec77ce44017c",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1744,
+        400
+      ],
+      "id": "61b01fa2-7e04-4a20-8e36-a3f7a0a83fc5",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "caTIomGJz7KcyT8l",
+          "name": "oepallaz@gmail.com account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  text: $input.first().json.text,\n  type: $input.first().json.type,\n  ai: $input.first().json.ai,\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1552,
+        192
+      ],
+      "id": "07094913-b40c-44ec-963f-d38c6480f09b",
+      "name": "join data"
+    },
+    {
+      "parameters": {
+        "content": "## AI",
+        "height": 1104,
+        "width": 1232
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1504,
+        112
+      ],
+      "id": "ae117c26-6d76-458d-ab79-6741e11bbd23",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger - message received').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "reply_to_message_id": "={{ $('Telegram Trigger - message received').item.json.message.message_id }}"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2912,
+        208
+      ],
+      "id": "7ed515b0-528e-42ab-80fa-57f54de8e193",
+      "name": "Send a text message",
+      "webhookId": "dcf114ef-758a-4fde-939a-a9ee16b14644",
+      "credentials": {
+        "telegramApi": {
+          "id": "kfvwYWkJUfwEQncB",
+          "name": "n8n_edu_test_2026_bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## /start",
+        "height": 256,
+        "width": 480
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        144,
+        -192
+      ],
+      "id": "09bee3ec-6209-4252-9904-adaffea626c2",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Text message",
+        "height": 224,
+        "width": 1200
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        144,
+        144
+      ],
+      "id": "138131fe-458f-4aed-8bd8-14696db6873e",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## Image-message",
+        "height": 320,
+        "width": 1200
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        144,
+        832
+      ],
+      "id": "b8005e9d-acea-4d5f-9cbd-92dec8fb1f72",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "jsCode": "return $('Telegram Trigger - message received').first().json.message.photo[3] ||\n  $('Telegram Trigger - message received').first().json.message.photo[2] ||\n  $('Telegram Trigger - message received').first().json.message.photo[1] ||\n  $('Telegram Trigger - message received').first().json.message.photo[0];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        880
+      ],
+      "id": "28b6af23-9eb6-47a8-8908-0bbfd0a9c8ce",
+      "name": "Select the photo with the highest resolution"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $json.file_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        640,
+        880
+      ],
+      "id": "66953e11-8fd3-43a4-8b4a-e12ad4929889",
+      "name": "Get the photo file",
+      "webhookId": "6d822c5f-86dc-4ed0-9f51-5945f6f15ab2",
+      "credentials": {
+        "telegramApi": {
+          "id": "kfvwYWkJUfwEQncB",
+          "name": "n8n_edu_test_2026_bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "GPT-4O"
+        },
+        "text": "={{ $('Telegram Trigger - message received').item.json.message.caption || \"What is shown in the picture?\"}}",
+        "inputType": "base64",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.3,
+      "position": [
+        864,
+        880
+      ],
+      "id": "86e2585f-6a7f-4920-8a47-0c46ce5c2449",
+      "name": "Analyze image",
+      "credentials": {
+        "openAiApi": {
+          "id": "caTIomGJz7KcyT8l",
+          "name": "oepallaz@gmail.com account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"text\": \"{{ $('Telegram Trigger - message received').item.json.message.caption || \"What is shown in the picture?\"}}\",\n  \"type\": \"image\",\n  \"ai\": {{ $json['0'].content[0].text.toJsonString() }}\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        1088,
+        880
+      ],
+      "id": "0db48fb6-db66-4039-ae74-49edc64eb971",
+      "name": "photo message data"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Telegram Trigger - message received').item.json.message.chat.id }}",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        1904,
+        400
+      ],
+      "id": "875ebe70-311f-402e-88f5-2be0fd5ff2a1",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger - message received').item.json.message.chat.id }}",
+        "text": "={{ $json.ai }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "reply_to_message_id": "={{ $('Telegram Trigger - message received').item.json.message.message_id }}"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2912,
+        880
+      ],
+      "id": "696b119b-3ba8-4f4a-a546-c0fd00b87b69",
+      "name": "Send the results of the image analysis",
+      "webhookId": "dcf114ef-758a-4fde-939a-a9ee16b14644",
+      "credentials": {
+        "telegramApi": {
+          "id": "kfvwYWkJUfwEQncB",
+          "name": "n8n_edu_test_2026_bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Telegram response",
+        "height": 1376,
+        "width": 336,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2800,
+        -160
+      ],
+      "id": "20cc5009-6b5b-4270-b1ad-d614cc1dfe09",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "operation": "sendChatAction",
+        "chatId": "={{ $('Telegram Trigger - message received').item.json.message.chat.id }}"
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        208,
+        192
+      ],
+      "id": "71430cac-bde6-43a7-b123-e509c945511a",
+      "name": "typing - text message input",
+      "webhookId": "a829be8f-56a5-4e1d-a3e0-54bb0164628f",
+      "credentials": {
+        "telegramApi": {
+          "id": "kfvwYWkJUfwEQncB",
+          "name": "n8n_edu_test_2026_bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendChatAction",
+        "chatId": "={{ $('Telegram Trigger - message received').item.json.message.chat.id }}"
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        192,
+        880
+      ],
+      "id": "3ee18e48-1dee-4def-bdf3-984f992a6ec3",
+      "name": "typing - photo message input",
+      "webhookId": "a829be8f-56a5-4e1d-a3e0-54bb0164628f",
+      "credentials": {
+        "telegramApi": {
+          "id": "kfvwYWkJUfwEQncB",
+          "name": "n8n_edu_test_2026_bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Audio",
+        "height": 320,
+        "width": 1200
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        144,
+        448
+      ],
+      "id": "99b3dd9a-8e0e-42a0-a07c-d81f3ae1197a",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.3,
+      "position": [
+        880,
+        528
+      ],
+      "id": "ead25124-21fd-463c-b0f8-fcc715c93b26",
+      "name": "Transcribe a recording",
+      "credentials": {
+        "openAiApi": {
+          "id": "caTIomGJz7KcyT8l",
+          "name": "oepallaz@gmail.com account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendChatAction",
+        "chatId": "={{ $('Telegram Trigger - message received').item.json.message.chat.id }}",
+        "action": "record_audio"
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        192,
+        528
+      ],
+      "id": "45d9e454-fd82-4dd0-8f11-1afefeef3a3d",
+      "name": "recording - audio message input",
+      "webhookId": "a829be8f-56a5-4e1d-a3e0-54bb0164628f",
+      "credentials": {
+        "telegramApi": {
+          "id": "kfvwYWkJUfwEQncB",
+          "name": "n8n_edu_test_2026_bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $('Telegram Trigger - message received').item.json.message.voice.file_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        656,
+        528
+      ],
+      "id": "c9b517e1-8927-4e45-bab2-e507a8901d6d",
+      "name": "Get the audio file",
+      "webhookId": "c6ea7e08-fe03-4104-9b81-8da2f6880d1c",
+      "credentials": {
+        "telegramApi": {
+          "id": "kfvwYWkJUfwEQncB",
+          "name": "n8n_edu_test_2026_bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "83839edf-c92e-497d-980f-5a1b5d06b601",
+              "leftValue": "={{ $('join data').item.json.type }}",
+              "rightValue": "audio",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2144,
+        192
+      ],
+      "id": "075ea0d0-fb31-4d02-951e-eee3ffde73cc",
+      "name": "is audio?"
+    },
+    {
+      "parameters": {
+        "operation": "sendAudio",
+        "chatId": "={{ $('Telegram Trigger - message received').item.json.message.chat.id }}",
+        "binaryData": true,
+        "additionalFields": {
+          "reply_to_message_id": "={{ $('Telegram Trigger - message received').item.json.message.message_id }}"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2912,
+        496
+      ],
+      "id": "9e0c70b0-0381-42f1-94ab-54214b5f782e",
+      "name": "Send an audio file",
+      "webhookId": "555bfedb-ef08-460c-aa3e-9c19d76876bf",
+      "credentials": {
+        "telegramApi": {
+          "id": "kfvwYWkJUfwEQncB",
+          "name": "n8n_edu_test_2026_bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "input": "={{ $('AI Agent').item.json.output }}",
+        "voice": "nova",
+        "options": {
+          "response_format": "opus"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.3,
+      "position": [
+        2480,
+        496
+      ],
+      "id": "a4f78227-3421-4cee-ab97-2a6f60860ba4",
+      "name": "Generate audio response",
+      "credentials": {
+        "openAiApi": {
+          "id": "caTIomGJz7KcyT8l",
+          "name": "oepallaz@gmail.com account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"text\": {{ $json.text.toJsonString() }},\n  \"type\": \"audio\",\n  \"ai\": \"\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        1088,
+        528
+      ],
+      "id": "e2a20ea4-1021-4d6a-8d67-156b58a1a7c0",
+      "name": "audio message data"
+    },
+    {
+      "parameters": {
+        "resource": "speech",
+        "voice": {
+          "__rl": true,
+          "value": "6Gr4AVmTax1pMJO0lHRK",
+          "mode": "list",
+          "cachedResultName": "Catalina - Chilean Spanish"
+        },
+        "text": "={{ $json.output }}",
+        "additionalOptions": {
+          "outputFormat": "opus_48000_32"
+        },
+        "requestOptions": {}
+      },
+      "type": "@elevenlabs/n8n-nodes-elevenlabs.elevenLabs",
+      "typeVersion": 1,
+      "position": [
+        2480,
+        288
+      ],
+      "id": "7c1e2d91-120b-43d1-a89f-3881295f0282",
+      "name": "Convert text to speech",
+      "credentials": {
+        "elevenLabsApi": {
+          "id": "xCkC2kDrxvlIURmR",
+          "name": "ElevenLabs account - oepallaz@gmail.com"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger - message received": {
+      "main": [
+        [
+          {
+            "node": "message type",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Request giphy stickers": {
+      "main": [
+        [
+          {
+            "node": "Send a sticker",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "message type": {
+      "main": [
+        [
+          {
+            "node": "Request giphy stickers",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "typing - text message input",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "recording - audio message input",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "typing - photo message input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "message data": {
+      "main": [
+        [
+          {
+            "node": "join data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "join data": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "is audio?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Select the photo with the highest resolution": {
+      "main": [
+        [
+          {
+            "node": "Get the photo file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get the photo file": {
+      "main": [
+        [
+          {
+            "node": "Analyze image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze image": {
+      "main": [
+        [
+          {
+            "node": "photo message data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "photo message data": {
+      "main": [
+        [
+          {
+            "node": "Send the results of the image analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "typing - text message input": {
+      "main": [
+        [
+          {
+            "node": "message data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "typing - photo message input": {
+      "main": [
+        [
+          {
+            "node": "Select the photo with the highest resolution",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribe a recording": {
+      "main": [
+        [
+          {
+            "node": "audio message data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "recording - audio message input": {
+      "main": [
+        [
+          {
+            "node": "Get the audio file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get the audio file": {
+      "main": [
+        [
+          {
+            "node": "Transcribe a recording",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "is audio?": {
+      "main": [
+        [
+          {
+            "node": "Generate audio response",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate audio response": {
+      "main": [
+        [
+          {
+            "node": "Send an audio file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "audio message data": {
+      "main": [
+        [
+          {
+            "node": "join data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert text to speech": {
+      "main": [
+        [
+          {
+            "node": "Send an audio file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "3289254d-f88f-4e6e-9a99-3617bdbd028b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6b36cdf39367ca32fa52588c847bf464d3e80384f18b614160e592018f195d22"
+  },
+  "nodeGroups": [],
+  "id": "gtPslcvm5fAYUTkG",
+  "tags": []
+}
