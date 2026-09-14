@@ -1,0 +1,1075 @@
+{
+  "name": "whatsapp_assistant",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "messages"
+        ],
+        "options": {}
+      },
+      "type": "n8n-nodes-base.whatsAppTrigger",
+      "typeVersion": 1,
+      "position": [
+        -4736,
+        1456
+      ],
+      "id": "aa6ee3ac-802f-4d5c-bea1-424936441e96",
+      "name": "WhatsApp Trigger",
+      "webhookId": "019d4fe5-3df5-4470-8bb6-1d891ecba5a3",
+      "credentials": {
+        "whatsAppTriggerApi": {
+          "id": "V0rKuoj0raGJe3Oe",
+          "name": "WhatsApp OAuth account - oepallaz@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.messages[0].text.body }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    },
+                    "id": "d3b5f9d4-dcd0-491d-b8c2-6fbf407a4c84"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "text-message"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "01c2f729-3085-4729-8b2e-d776ae4f652c",
+                    "leftValue": "={{ $json.messages[0].image }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "object",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "image-message"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "25ecaced-52b4-4f24-b311-e645cf656f8f",
+                    "leftValue": "={{ $json.messages[0].document.mime_type }}",
+                    "rightValue": "image/",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "image-document-message"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "58d96d19-8023-46b3-9482-04a14239d73c",
+                    "leftValue": "={{ $json.messages[0].audio }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "object",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "audio-message"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -4544,
+        1424
+      ],
+      "id": "2fa4e8c3-f440-40dd-bb44-8c9cc7dcf034",
+      "name": "message type"
+    },
+    {
+      "parameters": {
+        "content": "## Text message",
+        "height": 272,
+        "width": 464
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -4112,
+        880
+      ],
+      "id": "e30e380b-3cda-4bcb-9810-c397d3530e67",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"userPrompt\": {{ $('WhatsApp Trigger').item.json.messages[0].text.body.toJsonString() }},\n  \"type\": \"text-message\",\n  \"ai\": \"\",\n  \"wa_id\": \"{{ $json.contacts[0].wa_id }}\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        -4032,
+        960
+      ],
+      "id": "5da28654-3ff2-4850-b160-70e87157eca8",
+      "name": "get message info"
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  userPrompt: $input.first().json.userPrompt,\n  type: $input.first().json.type,\n  ai: $input.first().json.ai,\n  wa_id: $input.first().json.wa_id\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2784,
+        960
+      ],
+      "id": "045b178c-2a6d-4dde-9fe5-1684765c6b69",
+      "name": "join data"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.userPrompt }}",
+        "options": {
+          "systemMessage": "=## Description\n- You are an assistant who helps people with general knowledge questions\n- Your responses should be very short—1 or 2 lines maximum. \n\n- Sometimes you will receive messages containing AI-powered image preprocessing; the response has not yet been sent to the user, so your task is just to send this preprocessing as a message to the user without processing the user prompt.\n\n## AI-powered image preprocessing:\n{{ $json.ai }}\n\n## Tools\n“send_whatsapp_message” allows you to send Whatsapp messages"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -2560,
+        960
+      ],
+      "id": "62f08690-2ffb-49b2-a2e1-bd407b031d95",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -2608,
+        1200
+      ],
+      "id": "c28bf00b-9407-4986-baed-86d8fb3b4942",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "caTIomGJz7KcyT8l",
+          "name": "oepallaz@gmail.com account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.wa_id }}",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        -2416,
+        1200
+      ],
+      "id": "d7721961-1bcd-457a-9e91-2d56e5add858",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "content": "## AI",
+        "height": 1424,
+        "width": 2176
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -3504,
+        864
+      ],
+      "id": "15b8ec98-c1b1-426a-ab2e-60592a7ae400",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "1307618025768607",
+        "recipientPhoneNumber": "={{ $('join data').item.json.wa_id }}",
+        "textBody": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        -1184,
+        976
+      ],
+      "id": "9a9031bb-ac0a-411f-8e4d-5259fb81042d",
+      "name": "send_whatsapp_message",
+      "webhookId": "f1edc8f1-f844-4b51-a184-a5ecd03a7c2f",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "lUe460MP0LtBwtBa",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Image message",
+        "height": 272,
+        "width": 464
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -4112,
+        1216
+      ],
+      "id": "77c132c6-3b74-40c4-a65a-8ed919f6478b",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "resource": "media",
+        "operation": "mediaUrlGet",
+        "mediaGetId": "={{ $json.messages[0].image.id }}"
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        -4048,
+        1296
+      ],
+      "id": "9ff9f395-82c9-477c-aae9-ceb6bf70b723",
+      "name": "Download image file data",
+      "webhookId": "f0994ddd-7c06-4871-9676-7fdf5d903255",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "lUe460MP0LtBwtBa",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        -3808,
+        1296
+      ],
+      "id": "89aeabf8-d171-4899-af07-d00b12a97521",
+      "name": "Download image file",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "lKPXqaJ4gt3ROJ20",
+          "name": "whatsapp bearer token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "GPT-4O"
+        },
+        "text": "={{\n$('WhatsApp Trigger').item.json.messages[0].image.caption\n|| \"What's in this image?\"\n}}",
+        "inputType": "base64",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.3,
+      "position": [
+        -3392,
+        1296
+      ],
+      "id": "93f026ae-b582-462d-a4c4-36833470c4c9",
+      "name": "Analyze image",
+      "credentials": {
+        "openAiApi": {
+          "id": "caTIomGJz7KcyT8l",
+          "name": "oepallaz@gmail.com account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## WhatsApp response",
+        "height": 1424,
+        "width": 336,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1264,
+        864
+      ],
+      "id": "311d22e0-4bdc-466d-bd93-1ba0df3f5e2e",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "1307618025768607",
+        "recipientPhoneNumber": "={{ $('WhatsApp Trigger').item.json.messages[0].from }}",
+        "textBody": "={{ $json['0'].content[0].text }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        -1184,
+        1248
+      ],
+      "id": "fe4a5d4f-d2d8-4c98-bdf8-9987109a4386",
+      "name": "Send the results of the image analysis",
+      "webhookId": "e9a9c47f-d9d2-4de6-aa53-f8e91b995dad",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "lUe460MP0LtBwtBa",
+          "name": "WhatsApp account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"userPrompt\": {{ $('WhatsApp Trigger').item.json.messages[0].image.caption?.toJsonString()\n|| \"What's in this image?\".toJsonString()}},\n  \"type\": \"image-message\",\n  \"ai\": {{ $json['0'].content[0].text.toJsonString() }},\n  \"wa_id\": \"{{ $('WhatsApp Trigger').item.json.contacts[0].wa_id }}\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        -3168,
+        1296
+      ],
+      "id": "b4f5827e-4c33-404c-a6ad-8f358e6e0e5c",
+      "name": "image message data"
+    },
+    {
+      "parameters": {
+        "content": "## Image document message",
+        "height": 272,
+        "width": 464
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -4112,
+        1552
+      ],
+      "id": "0d49e48b-fc73-49ac-9fb2-54e9c2c5bd32",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "resource": "media",
+        "operation": "mediaUrlGet",
+        "mediaGetId": "={{ $json.messages[0].document.id }}"
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        -4064,
+        1616
+      ],
+      "id": "499f816a-de60-4ff9-a4c2-6c7a16a5533f",
+      "name": "Download image document file data",
+      "webhookId": "f0994ddd-7c06-4871-9676-7fdf5d903255",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "lUe460MP0LtBwtBa",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        -3824,
+        1616
+      ],
+      "id": "f75fc45d-9276-49e1-854e-83426e4611d7",
+      "name": "Download image document file",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "lKPXqaJ4gt3ROJ20",
+          "name": "whatsapp bearer token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "GPT-4O"
+        },
+        "text": "={{\n$('WhatsApp Trigger').item.json.messages[0].document.caption\n|| \"What's in this image?\"\n}}",
+        "inputType": "base64",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.3,
+      "position": [
+        -3392,
+        1616
+      ],
+      "id": "3845287e-609b-40a3-9fa6-7a8ecafd5762",
+      "name": "Analyze document image",
+      "credentials": {
+        "openAiApi": {
+          "id": "caTIomGJz7KcyT8l",
+          "name": "oepallaz@gmail.com account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"userPrompt\": {{ $('WhatsApp Trigger').item.json.messages[0].document.caption?.toJsonString()\n|| \"What's in this image?\".toJsonString()}},\n  \"type\": \"image-message\",\n  \"ai\": {{ $json['0'].content[0].text.toJsonString() }},\n  \"wa_id\": \"{{ $('WhatsApp Trigger').item.json.contacts[0].wa_id }}\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        -3168,
+        1616
+      ],
+      "id": "34f51dbb-f054-45fa-ba09-d3d7344703a9",
+      "name": "image document message data"
+    },
+    {
+      "parameters": {
+        "content": "## Audio message",
+        "height": 400,
+        "width": 464
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -4112,
+        1888
+      ],
+      "id": "297798ac-409c-46f5-9eb4-89a2cc297aed",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "resource": "media",
+        "operation": "mediaUrlGet",
+        "mediaGetId": "={{ $json.messages[0].audio.id }}"
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        -4064,
+        1952
+      ],
+      "id": "dd9303db-9c0e-4533-90ba-d776e4467f15",
+      "name": "Download audio file data",
+      "webhookId": "f0994ddd-7c06-4871-9676-7fdf5d903255",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "lUe460MP0LtBwtBa",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        -3824,
+        1952
+      ],
+      "id": "3df1fbf2-1042-499c-bc64-4fec0a23d26f",
+      "name": "Download audio file",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "lKPXqaJ4gt3ROJ20",
+          "name": "whatsapp bearer token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.3,
+      "position": [
+        -3392,
+        1952
+      ],
+      "id": "edf18c67-f0fb-4c53-8778-d578f7bb9c8e",
+      "name": "Transcribe a recording",
+      "credentials": {
+        "openAiApi": {
+          "id": "caTIomGJz7KcyT8l",
+          "name": "oepallaz@gmail.com account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"userPrompt\": {{ $json.text.toJsonString() }},\n  \"type\": \"audio-message\",\n  \"ai\": \"\",\n  \"wa_id\": \"{{ $('WhatsApp Trigger').item.json.contacts[0].wa_id }}\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        -3168,
+        1952
+      ],
+      "id": "b88d4512-8d4b-488a-a35f-8434b0a6bc0b",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "83839edf-c92e-497d-980f-5a1b5d06b601",
+              "leftValue": "={{ $('join data').item.json.type }}",
+              "rightValue": "audio-message",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -2160,
+        960
+      ],
+      "id": "029a2129-8d65-472d-86e6-2e18bc8729a1",
+      "name": "is audio-message?"
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "1307618025768607",
+        "recipientPhoneNumber": "={{ $('join data').item.json.wa_id }}",
+        "messageType": "audio",
+        "mediaPath": "useMedian8n",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        -1152,
+        1968
+      ],
+      "id": "253b775f-c9c0-4b92-bc57-964b84e51158",
+      "name": "send_whatsapp_audio_response",
+      "webhookId": "f1edc8f1-f844-4b51-a184-a5ecd03a7c2f",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "lUe460MP0LtBwtBa",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "ad7b4420-8097-451b-9d99-a74d0c761ffc",
+              "leftValue": "True",
+              "rightValue": "True",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -1792,
+        1984
+      ],
+      "id": "a9cdb60b-867e-45ce-83cd-ac659f72f4c3",
+      "name": "Use OpenAI for generate audio?"
+    },
+    {
+      "parameters": {
+        "resource": "speech",
+        "voice": {
+          "__rl": true,
+          "value": "6Gr4AVmTax1pMJO0lHRK",
+          "mode": "list",
+          "cachedResultName": "Catalina - Chilean Spanish"
+        },
+        "text": "={{ $json.output }}",
+        "additionalOptions": {
+          "outputFormat": "opus_48000_192"
+        },
+        "requestOptions": {}
+      },
+      "type": "@elevenlabs/n8n-nodes-elevenlabs.elevenLabs",
+      "typeVersion": 1,
+      "position": [
+        -1520,
+        2080
+      ],
+      "id": "1974b8a7-7e50-4fb1-8225-7e53f5fa1b56",
+      "name": "Generate ElevenLabs audio",
+      "credentials": {
+        "elevenLabsApi": {
+          "id": "xCkC2kDrxvlIURmR",
+          "name": "ElevenLabs account - oepallaz@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "input": "={{ $('AI Agent').item.json.output }}",
+        "voice": "nova",
+        "options": {
+          "response_format": "opus"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.3,
+      "position": [
+        -1520,
+        1904
+      ],
+      "id": "eabceacb-7757-43a8-b094-71e2d821ede6",
+      "name": "Generate OpenAI audio",
+      "credentials": {
+        "openAiApi": {
+          "id": "caTIomGJz7KcyT8l",
+          "name": "oepallaz@gmail.com account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "WhatsApp Trigger": {
+      "main": [
+        [
+          {
+            "node": "message type",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "message type": {
+      "main": [
+        [
+          {
+            "node": "get message info",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Download image file data",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Download image document file data",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Download audio file data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get message info": {
+      "main": [
+        [
+          {
+            "node": "join data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "join data": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "is audio-message?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download image file data": {
+      "main": [
+        [
+          {
+            "node": "Download image file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download image file": {
+      "main": [
+        [
+          {
+            "node": "Analyze image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze image": {
+      "main": [
+        [
+          {
+            "node": "image message data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "image message data": {
+      "main": [
+        [
+          {
+            "node": "join data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download image document file data": {
+      "main": [
+        [
+          {
+            "node": "Download image document file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download image document file": {
+      "main": [
+        [
+          {
+            "node": "Analyze document image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze document image": {
+      "main": [
+        [
+          {
+            "node": "image document message data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "image document message data": {
+      "main": [
+        [
+          {
+            "node": "join data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download audio file data": {
+      "main": [
+        [
+          {
+            "node": "Download audio file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download audio file": {
+      "main": [
+        [
+          {
+            "node": "Transcribe a recording",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribe a recording": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "join data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "is audio-message?": {
+      "main": [
+        [
+          {
+            "node": "Use OpenAI for generate audio?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "send_whatsapp_message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Use OpenAI for generate audio?": {
+      "main": [
+        [
+          {
+            "node": "Generate OpenAI audio",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Generate ElevenLabs audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate ElevenLabs audio": {
+      "main": [
+        [
+          {
+            "node": "send_whatsapp_audio_response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate OpenAI audio": {
+      "main": [
+        [
+          {
+            "node": "send_whatsapp_audio_response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "ebb3cc50-ae24-4a67-a611-9b4204db46db",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6b36cdf39367ca32fa52588c847bf464d3e80384f18b614160e592018f195d22"
+  },
+  "nodeGroups": [],
+  "id": "CX8glfFgPLqR8AlK",
+  "tags": []
+}
