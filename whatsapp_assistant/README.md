@@ -138,6 +138,9 @@ Specifically, we will cover:
 ![WhatsApp Assistant Workflow](./screenshots/Screenshot_172.png)
 
 ---
+![WhatsApp Assistant Workflow](./screenshots/Screenshot_178.png)
+
+---
 
 [Watch the WhatsApp Assistant demo video](https://drive.google.com/file/d/1uuR1N4FrhvfOEjo0BTEWgMo0fvNuKcS8/view?usp=sharing)
 

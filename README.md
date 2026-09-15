@@ -59,6 +59,6 @@ Completed the **"n8n + MCP: Automatización y Agentes de IA Inteligentes"** cour
 ![Workflow Authentication](./screenshots/Screenshot_177.png)
 
 ---
-![Workflow Authentication](./screenshots/Screenshot_176.png)
+![Workflow Authentication](./screenshots/Screenshot_178.png)
 
 ---
