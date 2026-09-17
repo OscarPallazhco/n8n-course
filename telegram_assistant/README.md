@@ -151,11 +151,7 @@ Specifically, we will cover:
 
 ---
 
-![Telegram Assistant Workflow](./screenshots/Screenshot_162.png)
-
----
-
-![Telegram Assistant Workflow](./screenshots/Screenshot_163.png)
+![Telegram Assistant Workflow](./screenshots/Screenshot_177.png)
 
 ---
 
